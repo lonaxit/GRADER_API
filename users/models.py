@@ -5,7 +5,6 @@ from django.utils import timezone
 
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
-from core.models import *
 
 class CustomUserManager(BaseUserManager):
     
