@@ -76,8 +76,8 @@ class ResumptionSetting(models.Model):
         return self.current_term
 
 class StudentProfile(models.Model):
-    user = models.OneToOneField(User,on_delete=models.CASCADE)
-    guradian = models.CharField(max_length=200,null=True,blank=True)
+    user = models.OneToOneField(User,on_delete=models.CASCADE,related_name='studentprofile')
+    guardian = models.CharField(max_length=200,null=True,blank=True)
     local_govt = models.CharField(max_length=200,null=True,blank=True)
     address = models.CharField(max_length=200,null=True,blank=True)
     session_admitted = models.ForeignKey(Session,on_delete=models.DO_NOTHING)
@@ -92,7 +92,7 @@ class StudentProfile(models.Model):
     
     
 class TeacherProfile(models.Model):
-    user = models.OneToOneField(User,on_delete=models.CASCADE)
+    user = models.OneToOneField(User,on_delete=models.CASCADE,related_name='teacherprofile')
     local_govt = models.CharField(max_length=200,null=True,blank=True)
     address = models.CharField(max_length=200,null=True,blank=True)
     qualification = models.CharField(max_length=200,null=True,blank=True)
@@ -101,6 +101,19 @@ class TeacherProfile(models.Model):
 
     def __str__(self):
         return self.user.sur_name
+
+# assign subject teacher  
+class SubjectTeacher(models.Model):
+    subject = models.ForeignKey(Subject,on_delete=models.DO_NOTHING)
+    classroom = models.ForeignKey(SchoolClass,on_delete=models.DO_NOTHING)
+    session = models.ForeignKey(Session,on_delete=models.DO_NOTHING)
+    teacher = models.ForeignKey(User,on_delete=models.DO_NOTHING,related_name='teachersubjects')
+    status = models.CharField(max_length=50, default='Active')
+    date_created = models.DateTimeField(auto_now_add=True,null=True,blank=True)
+    date_modified = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return self.teacher.sur_name
    
 
 # class Course(models.Model):

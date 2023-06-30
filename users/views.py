@@ -166,7 +166,26 @@ class retrieveAllUsers(APIView):
                 {'error':'Unable to retrieve data'},
                 status =status.HTTP_500_INTERNAL_SERVER_ERROR
             )
-            
+
+# fetch staff profile
+class retrieveAllStaff(APIView):
+    # permission_classes = [IsAuthenticated,IsAuthOrReadOnly]
+    
+    
+    def get(self,request):
+        try:
+            user = User.objects.all()
+            user = UserTeacherSerializer(user,many=True)
+            return Response(
+                {'user':user.data},
+                status= status.HTTP_200_OK
+            )
+        except:
+            return Response(
+                {'error':'Unable to retrieve data'},
+                status =status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+             
 # update user
 class UpdateUser(generics.RetrieveUpdateAPIView):
     queryset = User.objects.all()

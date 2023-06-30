@@ -6,6 +6,7 @@ urlpatterns=[
     path('me/', RetrieveUserView.as_view(), name="me"),
     path('get-user/<str:username>/', GetUserWithUsername.as_view(), name="get-user"),
     path('all/users/',retrieveAllUsers.as_view(), name="all-users"),
+    path('all/staff/',retrieveAllStaff.as_view(), name="all-staff"),
     path('<int:pk>/user-update/',UpdateUser.as_view(), name="update-user"),
     
     # change login detail using userid
