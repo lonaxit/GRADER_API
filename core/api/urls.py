@@ -42,5 +42,15 @@ urlpatterns =[
     path("subjectteacher-detail/<int:pk>/", SubjectTeacherClassDetailAPIView.as_view(), name="subjectteacher-detail"),
     
     path("toggle-subjectteacher/<int:pk>/", ToggleSubjectTeacherAPIView.as_view(), name="toggle-subjectteacher"),
+    
+    
+    # url for class teacher
+    path("list-classteacher/", ClassTeacherListAPIView.as_view(), name="list-classteacher"),
+    
+    path("new-class-teacher/<int:pk>/", ClassTeacherCreateAPIView.as_view(), name="new-class-teacher"),
+    
+    path("classteacher-detail/<int:pk>/", ClassTeacherClassDetailAPIView.as_view(), name="classteacher-detail"),
+    
+    path("toggle-classteacher/<int:pk>/", ToggleClassTeacherAPIView.as_view(), name="toggle-classteacher"),
 
 ]

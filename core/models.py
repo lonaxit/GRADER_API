@@ -108,39 +108,47 @@ class SubjectTeacher(models.Model):
     classroom = models.ForeignKey(SchoolClass,on_delete=models.DO_NOTHING)
     session = models.ForeignKey(Session,on_delete=models.DO_NOTHING)
     teacher = models.ForeignKey(User,on_delete=models.DO_NOTHING,related_name='teachersubjects')
-    status = models.CharField(max_length=50, default='Active')
+    status = models.BooleanField(default=True)
     date_created = models.DateTimeField(auto_now_add=True,null=True,blank=True)
     date_modified = models.DateTimeField(auto_now=True)
     
     def __str__(self):
         return self.teacher.sur_name
    
-
-# class Course(models.Model):
-#     course_name = models.CharField(max_length=100)
-#     course_code = models.CharField(max_length=20, unique=True)
-
-
-# class AcademicSession(models.Model):
-#     _name = models.CharField(max_length=100)
-#     _code = models.CharField(max_length=20, unique=True)
+# assign class teacher
+class ClassTeacher(models.Model):
+    session = models.ForeignKey(Session,on_delete=models.DO_NOTHING)
+    term = models.ForeignKey(Term,on_delete=models.DO_NOTHING)
+    classroom = models.ForeignKey(SchoolClass,on_delete=models.DO_NOTHING, related_name='classes')
+    tutor = models.ForeignKey(User,on_delete=models.DO_NOTHING,related_name='formmaster')
+    status = models.BooleanField(default=True)
+    date_created = models.DateTimeField(auto_now_add=True,null=True,blank=True)
+    date_modified = models.DateTimeField(auto_now=True)
     
-# class Term(models.Model):
-#     _name = models.CharField(max_length=100)
-#     _code = models.CharField(max_length=20, unique=True)
+    def __str__(self):
+        return self.tutor.sur_name
     
-# class Classroom(models.Model):
-#     name = models.CharField(max_length=100)
-#     class_code = models.CharField(max_length=20, unique=True)
-
-# class ClassTeacher(models.Model):
-#     # student = models.ForeignKey(Student, on_delete=models.CASCADE)
-#     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-#     score = models.FloatField()
-#     date = models.DateField(auto_now_add=True)
     
-# class Grade(models.Model):
-#     # student = models.ForeignKey(User, on_delete=models.CASCADE)
-#     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-#     score = models.FloatField()
-#     date = models.DateField(auto_now_add=True)
+class Scores(models.Model):
+    user = models.ForeignKey(User,on_delete=models.DO_NOTHING, related_name='student')
+    term = models.ForeignKey(Term,on_delete=models.DO_NOTHING)
+    session = models.ForeignKey(Session,on_delete=models.DO_NOTHING)
+    studentclass = models.ForeignKey(SchoolClass,on_delete=models.DO_NOTHING)
+    subject = models.ForeignKey(Subject,on_delete=models.DO_NOTHING)
+    subjectteacher = models.ForeignKey(SubjectTeacher,on_delete=models.DO_NOTHING)
+    firstscore = models.DecimalField(max_digits=20, decimal_places=2,null=True,blank=True)
+    secondscore = models.DecimalField(max_digits=20, decimal_places=2,null=True,blank=True)
+    thirdscore = models.DecimalField(max_digits=20, decimal_places=2,null=True,blank=True)
+    totalca = models.DecimalField(max_digits=20, decimal_places=2,null=True,blank=True)
+    examscore = models.DecimalField(max_digits=20, decimal_places=2,null=True,blank=True)
+    subjecttotal = models.DecimalField(max_digits=20, decimal_places=2,null=True,blank=True)
+    subjaverage = models.DecimalField(max_digits=20, decimal_places=2,null=True,blank=True)
+    subjectposition = models.IntegerField(null=True)
+    subjectgrade = models.CharField(max_length=10,null=True)
+    subjectrating = models.CharField(max_length=10,null=True)
+    highest_inclass = models.DecimalField(max_digits=20, decimal_places=2,null=True,blank=True)
+    lowest_inclass =  models.DecimalField(max_digits=20, decimal_places=2,null=True,blank=True)
+    date_created = models.DateTimeField(auto_now_add=True,null=True)
+    date_modified = models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return self.user.sur_name

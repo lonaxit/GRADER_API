@@ -148,7 +148,7 @@ class SubjectTeacherListAPIView(generics.ListAPIView):
     # permission_classes =[IsAuthenticated & IsAuthOrReadOnly]
     
     
-# create a subject teacher
+# create a subject teacher given a userid
 class SubjectTeacherCreateAPIView(generics.CreateAPIView):
     
     serializer_class = SubjectTeacherSerializer
@@ -207,15 +207,10 @@ class ToggleSubjectTeacherAPIView(generics.RetrieveUpdateAPIView):
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
     
-   
 
     def put(self, request, *args, **kwargs):
         instance = self.get_object()
-        value = instance.status
-        flag = not value
-        print(value)
-        print(flag)
-        instance.status = flag  # Toggle the status
+        instance.status = not instance.status # Toggle the status
         instance.save()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
@@ -224,4 +219,71 @@ class ToggleSubjectTeacherAPIView(generics.RetrieveUpdateAPIView):
 class SubjectTeacherClassDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = SubjectTeacher.objects.all()
     serializer_class = SubjectTeacherSerializer
+    # permission_classes =[IsAuthenticated & IsAuthOrReadOnly]
+
+
+
+# create class teacher using userid
+class ClassTeacherListAPIView(generics.ListAPIView):
+    queryset = ClassTeacher.objects.all()
+    serializer_class = ClassTeacherSerializer
+    # permission_classes =[IsAuthenticated & IsAuthOrReadOnly]
+    
+    
+# create a class teacher given a userid
+class ClassTeacherCreateAPIView(generics.CreateAPIView):
+    queryset = ClassTeacher.objects.all()
+    serializer_class = ClassTeacherSerializer
+    # permission_classes =[IsAuthenticated & IsAuthOrReadOnly]
+    
+    
+    def get_queryset(self):
+        # just return the subjectteacher object
+        return ClassTeacher.objects.all()
+     
+    #  we need to overwrite the current function becos we need to pass the current movie ID for which review is being created
+    
+    def perform_create(self,serializer):
+        
+        pk = self.kwargs.get('pk')
+        
+        # get movie
+        user= User.objects.get(pk=pk)
+        
+        term = serializer.validated_data['term']
+        classroom = serializer.validated_data['classroom']
+        session = serializer.validated_data['session']
+        
+        # logic to prevent multple creation of class teacher by a user
+        _queryset = ClassTeacher.objects.filter(tutor=user,term=term,classroom=classroom,session=session)
+        
+        if _queryset.exists():
+            
+            raise ValidationError("Record already exist")
+        
+        serializer.save(tutor=user)
+
+
+class ToggleClassTeacherAPIView(generics.RetrieveUpdateAPIView):
+    queryset = ClassTeacher.objects.all()
+    serializer_class = ClassTeacherSerializer
+    
+
+    def get(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+    
+   
+    def put(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.status = not instance.status # Toggle the status
+        instance.save()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+
+class ClassTeacherClassDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = ClassTeacher.objects.all()
+    serializer_class = ClassTeacherSerializer
     # permission_classes =[IsAuthenticated & IsAuthOrReadOnly]

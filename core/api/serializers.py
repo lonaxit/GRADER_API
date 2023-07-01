@@ -129,8 +129,69 @@ class SubjectTeacherSerializer(serializers.ModelSerializer):
         return _subject.name
 
 
-class SubjectTeacherToggleSerializer(serializers.ModelSerializer):
-    
+
+
+# class teacher serializer
+class ClassTeacherSerializer(serializers.ModelSerializer):
+    tutor = serializers.StringRelatedField(read_only=True)
+    teacher_name = serializers.SerializerMethodField()
+    session_name = serializers.SerializerMethodField()
+    class_name = serializers.SerializerMethodField()
+    term_name = serializers.SerializerMethodField()
+
     class Meta:
-        model = SubjectTeacher
+        model = ClassTeacher
         fields = "__all__"
+    
+    def get_teacher_name(self,object):
+               
+        teacherObj = User.objects.get(pk=object.tutor.pk)
+        return teacherObj.sur_name + ' ' + teacherObj.first_name
+    
+    def get_session_name(self,object):
+               
+        session = Session.objects.get(pk=object.session.pk)
+        return session.name
+    
+    def get_term_name(self,object):
+               
+        term = Session.objects.get(pk=object.term.pk)
+        return term.name
+    
+    def get_class_name(self,object):
+               
+        _class = SchoolClass.objects.get(pk=object.classroom.pk)
+        return _class.class_name
+    
+
+
+class ScoresSerializer(serializers.ModelSerializer):
+    # tutor = serializers.StringRelatedField(read_only=True)
+    # teacher_name = serializers.SerializerMethodField()
+    # session_name = serializers.SerializerMethodField()
+    # class_name = serializers.SerializerMethodField()
+    # term_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Scores
+        fields = "__all__"
+    
+    # def get_teacher_name(self,object):
+               
+    #     teacherObj = User.objects.get(pk=object.tutor.pk)
+    #     return teacherObj.sur_name + ' ' + teacherObj.first_name
+    
+    # def get_session_name(self,object):
+               
+    #     session = Session.objects.get(pk=object.session.pk)
+    #     return session.name
+    
+    # def get_term_name(self,object):
+               
+    #     term = Session.objects.get(pk=object.term.pk)
+    #     return term.name
+    
+    # def get_class_name(self,object):
+               
+    #     _class = SchoolClass.objects.get(pk=object.classroom.pk)
+    #     return _class.class_name
