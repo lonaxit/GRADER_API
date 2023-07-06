@@ -79,6 +79,7 @@ class StudentProfile(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE,related_name='studentprofile')
     guardian = models.CharField(max_length=200,null=True,blank=True)
     local_govt = models.CharField(max_length=200,null=True,blank=True)
+    admission_number = models.IntegerField(null=True,blank=True)
     address = models.CharField(max_length=200,null=True,blank=True)
     session_admitted = models.ForeignKey(Session,on_delete=models.DO_NOTHING)
     term_admitted = models.ForeignKey(Term,on_delete=models.DO_NOTHING)
@@ -107,7 +108,7 @@ class SubjectTeacher(models.Model):
     subject = models.ForeignKey(Subject,on_delete=models.DO_NOTHING)
     classroom = models.ForeignKey(SchoolClass,on_delete=models.DO_NOTHING)
     session = models.ForeignKey(Session,on_delete=models.DO_NOTHING)
-    teacher = models.ForeignKey(User,on_delete=models.DO_NOTHING,related_name='teachersubjects')
+    teacher = models.ForeignKey(User,on_delete=models.CASCADE,related_name='teachersubjects')
     status = models.BooleanField(default=True)
     date_created = models.DateTimeField(auto_now_add=True,null=True,blank=True)
     date_modified = models.DateTimeField(auto_now=True)
@@ -120,7 +121,7 @@ class ClassTeacher(models.Model):
     session = models.ForeignKey(Session,on_delete=models.DO_NOTHING)
     term = models.ForeignKey(Term,on_delete=models.DO_NOTHING)
     classroom = models.ForeignKey(SchoolClass,on_delete=models.DO_NOTHING, related_name='classes')
-    tutor = models.ForeignKey(User,on_delete=models.DO_NOTHING,related_name='formmaster')
+    tutor = models.ForeignKey(User,on_delete=models.CASCADE,related_name='formmaster')
     status = models.BooleanField(default=True)
     date_created = models.DateTimeField(auto_now_add=True,null=True,blank=True)
     date_modified = models.DateTimeField(auto_now=True)
@@ -130,7 +131,7 @@ class ClassTeacher(models.Model):
     
     
 class Scores(models.Model):
-    user = models.ForeignKey(User,on_delete=models.DO_NOTHING, related_name='student')
+    user = models.ForeignKey(User,on_delete=models.CASCADE, related_name='student')
     term = models.ForeignKey(Term,on_delete=models.DO_NOTHING)
     session = models.ForeignKey(Session,on_delete=models.DO_NOTHING)
     studentclass = models.ForeignKey(SchoolClass,on_delete=models.DO_NOTHING)
@@ -152,3 +153,99 @@ class Scores(models.Model):
     date_modified = models.DateTimeField(auto_now=True)
     def __str__(self):
         return self.user.sur_name
+
+
+
+class Result(models.Model):
+    student = models.ForeignKey(User,on_delete=models.CASCADE)
+    term = models.ForeignKey(Term,on_delete=models.DO_NOTHING)
+    session = models.ForeignKey(Session,on_delete=models.DO_NOTHING)
+    studentclass = models.ForeignKey(SchoolClass,on_delete=models.DO_NOTHING)
+    classteacher = models.ForeignKey(ClassTeacher,on_delete=models.DO_NOTHING)
+    termtotal = models.DecimalField(max_digits=20, decimal_places=2,null=True,blank=True)
+    termaverage = models.DecimalField(max_digits=20, decimal_places=2,null=True,blank=True)
+    termposition = models.IntegerField(null=True)
+    classteachercomment = models.CharField(max_length=200,null=True,blank=True)
+    headteachercomment = models.CharField(max_length=200,null=True,blank=True)
+    attendance = models.CharField(max_length=20,null=True,blank=True)
+    date_created = models.DateTimeField(auto_now_add=True,null=True)
+    date_modified = models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return self.student.sur_name
+    
+class AnnualResult(models.Model):
+    
+    student = models.ForeignKey(User,on_delete=models.CASCADE)
+    session = models.ForeignKey(Session,on_delete=models.DO_NOTHING)
+    studentclass = models.ForeignKey(SchoolClass,on_delete=models.DO_NOTHING)
+    annualtotal = models.DecimalField(max_digits=20, decimal_places=2,null=True,blank=True)
+    annualaverage = models.DecimalField(max_digits=20, decimal_places=2,null=True,blank=True)
+    annualposition = models.IntegerField(null=True)
+    date_created = models.DateTimeField(auto_now_add=True,null=True)
+    date_modified = models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return self.student.sur_name
+    
+class Rating(models.Model):
+    description = models.CharField(max_length=100,null=True)
+    scores = models.IntegerField(null=True)
+    date_created = models.DateTimeField(auto_now_add=True,null=True)
+    date_modified = models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return self.description
+    
+
+class Psychomotor(models.Model):
+
+    skill = models.CharField(max_length=200,null=True,blank=True)
+    date_created = models.DateTimeField(auto_now_add=True,null=True)
+    date_modified = models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return self.skill
+
+class Affective(models.Model):
+    domain = models.CharField(max_length=200,null=True,blank=True)
+    date_created = models.DateTimeField(auto_now_add=True,null=True)
+    date_modified = models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return self.domain
+    
+    
+class Studentaffective(models.Model):
+
+    student = models.ForeignKey(User,on_delete=models.CASCADE)
+    term = models.ForeignKey(Term,on_delete=models.DO_NOTHING)
+    session = models.ForeignKey(Session,on_delete=models.DO_NOTHING)
+    studentclass = models.ForeignKey(SchoolClass,on_delete=models.DO_NOTHING)
+    affective = models.ForeignKey(Affective,on_delete=models.CASCADE)
+    rating = models.ForeignKey(Rating,on_delete=models.CASCADE)
+    date_created = models.DateTimeField(auto_now_add=True,null=True)
+    date_modified = models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return self.student.sur_name
+    
+
+class Studentpsychomotor(models.Model):
+
+    student = models.ForeignKey(User,on_delete=models.CASCADE)
+    term = models.ForeignKey(Term,on_delete=models.DO_NOTHING)
+    session = models.ForeignKey(Session,on_delete=models.DO_NOTHING)
+    studentclass = models.ForeignKey(SchoolClass,on_delete=models.DO_NOTHING)
+    psychomotor = models.ForeignKey(Psychomotor,on_delete=models.CASCADE)
+    rating = models.ForeignKey(Rating,on_delete=models.CASCADE)
+    date_created = models.DateTimeField(auto_now_add=True,null=True)
+    date_modified = models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return self.student.sur_name
+    
+    
+# my classroom
+class Classroom(models.Model):
+    session = models.ForeignKey(Session,on_delete=models.DO_NOTHING)
+    term = models.ForeignKey(Term,on_delete=models.DO_NOTHING)
+    class_room = models.ForeignKey(SchoolClass,on_delete=models.DO_NOTHING)
+    student = models.ForeignKey(User,on_delete=models.DO_NOTHING)
+    date_created = models.DateTimeField(auto_now_add=True,null=True,blank=True)
+    date_modified = models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return self.class_room

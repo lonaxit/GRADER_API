@@ -49,8 +49,53 @@ urlpatterns =[
     
     path("new-class-teacher/<int:pk>/", ClassTeacherCreateAPIView.as_view(), name="new-class-teacher"),
     
-    path("classteacher-detail/<int:pk>/", ClassTeacherClassDetailAPIView.as_view(), name="classteacher-detail"),
+    path("classteacher-detail/<int:pk>/", ClassTeacherDetailAPIView.as_view(), name="classteacher-detail"),
     
     path("toggle-classteacher/<int:pk>/", ToggleClassTeacherAPIView.as_view(), name="toggle-classteacher"),
+    
+    # endpoints for scores
+     path("list-scores/", ScoresListAPIView.as_view(), name="list-scores"),
+    #  create new sccores using user id
+    path("new-score/<int:pk>/", ScoresCreateAPIView.as_view(), name="new-score"),
+    path("scores-detail/<int:pk>/", ScoresDetailAPIView.as_view(), name="scores-detail"),
+    
+    # endpoint for creating result
+    path("create-result/",CreateResult.as_view(), name="create-result"),
+    
+    # get result passing in term, session and class
+    path("get-result/",GetResult.as_view(), name="get-result"),
+    
+    # get result detail using result id
+    path("detail-result/<int:pk>/",ResultDetailAPIView.as_view(), name="detail-result"),
+    path("userresult-list/<int:pk>/",UserResultList.as_view(), name="userresult-list"),
+    
+    # rating
+     path("create-rating/",RatingCreateAPIView.as_view(), name="create-rating"),
+     path("rating-detail/<int:pk>/",RatingDetailAPIView.as_view(), name="rating-detail"),
+    #  psychomotor
+    path("create-pyschomotor/", PsychomotorCreateListAPIView.as_view(), name="create-psychomotor"),
+    path("pyschomotor-detail/<int:pk>/", PyschomotorDetailAPIView.as_view(), name="psychomotor-detail"),
+    
+    # affective
+    path("create-affective/", AffectiveCreateListAPIView.as_view(), name="create-affective"),
+    path("affective-detail/<int:pk>/", AffectiveDetailAPIView.as_view(), name="affective-detail"),
+    
+    # create traits
+    path("createaffective-traits/",CreateStudentAffectiveTraits.as_view(), name="createaffective-traits"),
+    path("createpsycho-traits/",CreateStudentPsychoTraits.as_view(), name="createpsycho-traits"),
+   
+    
+    # fetch traits using term, session, class and userid 
+    path("student/affectivetraits/<int:userid>/<int:session>/<int:classroom>/<int:term>/",GetStudentAffectiveTraits.as_view(), name="get-studentaffective"),
+    
+    path("student/psychotraits/<int:userid>/<int:session>/<int:classroom>/<int:term>/",GetStudentPsychoTraits.as_view(), name="get-studentpsycho"),
+    
+    # Enrollment
+    path("new-enrollment/",EnrollStudent.as_view(), name="new-enrollment"),
+    
+    path("roll-call/",RollCall.as_view(), name="roll-call"),
+    
+    path("rollcall-detail/<int:pk>/",ClassroomDetailAPIView.as_view(), name="roll-call"),
+    
 
 ]

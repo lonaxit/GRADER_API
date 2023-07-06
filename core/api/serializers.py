@@ -166,7 +166,8 @@ class ClassTeacherSerializer(serializers.ModelSerializer):
 
 
 class ScoresSerializer(serializers.ModelSerializer):
-    # tutor = serializers.StringRelatedField(read_only=True)
+    user = serializers.StringRelatedField(read_only=True)
+    subjectteacher = serializers.StringRelatedField(read_only=True)
     # teacher_name = serializers.SerializerMethodField()
     # session_name = serializers.SerializerMethodField()
     # class_name = serializers.SerializerMethodField()
@@ -195,3 +196,60 @@ class ScoresSerializer(serializers.ModelSerializer):
                
     #     _class = SchoolClass.objects.get(pk=object.classroom.pk)
     #     return _class.class_name
+    
+
+class ResultSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Result
+        fields = "__all__"
+
+class RatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Rating
+        fields = "__all__"
+
+
+class PsychomotorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Psychomotor
+        fields = "__all__"
+        
+class AffectiveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Affective
+        fields = "__all__"
+        
+
+
+class StudentaffectiveSerializer(serializers.ModelSerializer):
+    affective = serializers.StringRelatedField(read_only=True)
+    rating = serializers.StringRelatedField(read_only=True)
+    
+    class Meta:
+        model = Studentaffective
+        fields = "__all__"
+        
+        
+
+class StudentpsychomotorSerializer(serializers.ModelSerializer):
+    psychomotor = serializers.StringRelatedField(read_only=True)
+    rating = serializers.StringRelatedField(read_only=True)
+    class Meta:
+        model = Studentpsychomotor
+        fields = "__all__"
+
+
+class ClassroomSerializer(serializers.ModelSerializer):
+    student_name = serializers.SerializerMethodField()
+    session = serializers.StringRelatedField()
+    term = serializers.StringRelatedField()
+    class_room = serializers.StringRelatedField()
+
+    class Meta:
+        model = Classroom
+        fields = "__all__"
+    
+    def get_student_name(self,object):
+        user = User.objects.get(pk=object.student.pk)
+        return user.sur_name + ' ' + user.first_name
