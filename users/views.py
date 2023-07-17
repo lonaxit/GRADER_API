@@ -75,7 +75,7 @@ class RegistrationView(APIView):
                         
                         if not is_staff:
                             username,sur_name,first_name,gender,dob,other_name,phone,password
-                            User.objects.create_user(username=username,sur_name=sur_name,first_name=first_name,gender=gender,dob=dob,other_name=other_name,phone=phone,password=password)
+                            User.objects.create_student(username=username,sur_name=sur_name,first_name=first_name,gender=gender,dob=dob,other_name=other_name,phone=phone,password=password)
                             
                             return Response(
                             {'msg':'User created successfuly'},
@@ -185,6 +185,13 @@ class retrieveAllStaff(APIView):
                 {'error':'Unable to retrieve data'},
                 status =status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+            
+
+# User details
+class UserDetail(generics.RetrieveUpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class =UserSerializer
+    # permission_classes =[IsAuthenticated & IsAuthOrReadOnly]
              
 # update user
 class UpdateUser(generics.RetrieveUpdateAPIView):
@@ -226,28 +233,28 @@ class UpdateUserPassword(APIView):
     
 
 # Update password for user given a username
-# class UpdatePasswordUsername(APIView):
+class UpdatePasswordUsername(APIView):
     
-#     """
-#     put method
-#     update a password given a user name
-#     """
-#     # permission_classes=[IsAuthOnly]
-#     # throttle_classes= [AnonRateThrottle]
+    """
+    put method
+    update a password given a user name
+    """
+    # permission_classes=[IsAuthOnly]
+    # throttle_classes= [AnonRateThrottle]
     
-#     def put(self,request):
+    def put(self,request):
         
-#         username = request.data['username']
-#         try:
-#             user = User.objects.get(username=username)
-#             password = make_password(request.data['password'])
+        username = request.data['username']
+        try:
+            user = User.objects.get(username=username)
+            password = make_password(request.data['password'])
             
-#             user.password = password
-#             user.save()
-#             return Response('Password Reset Successful!')
+            user.password = password
+            user.save()
+            return Response('Password Reset Successful!')
         
-#         except User.DoesNotExist:
-#             raise ValidationErr('Username does not exist')
+        except User.DoesNotExist:
+            raise ValidationErr('Username does not exist')
         
         
       

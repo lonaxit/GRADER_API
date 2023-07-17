@@ -8,11 +8,14 @@ from core.api.serializers import *
 # from profiles.api.serializers import *
 from core.api.permissions import *
 # from core.api.utilities import *
+# from django.http import HttpResponse,JsonResponse
+
+import csv
 
 # # import models
 from core.models import *
 from django.contrib.auth import get_user_model
-# from django.db.models import Q, Sum, Avg, Max, Min
+from django.db.models import Q, Sum, Avg, Max, Min
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 # # from rest_framework import mixins
@@ -28,6 +31,7 @@ from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser,FormParser
 
 import openpyxl
+from openpyxl import Workbook
 User = get_user_model()
 
 from core.api.utilities import *
@@ -120,25 +124,79 @@ class ResumptionSettingsClassDetailAPIView(generics.RetrieveUpdateDestroyAPIView
     
     
 
-class StudentProfileCreateAPIView(generics.ListCreateAPIView):
+class StudentProfileListAPIView(generics.ListAPIView):
     # ListCreateAPIView gives us both the get and post methods
     queryset = StudentProfile.objects.all()
     serializer_class = StudentProfileSerializer
     # permission_classes =[IsAuthenticated & IsAuthOrReadOnly]
     
-class StudentProfileClassDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+# create student profile using user id
+class StudentProfileCreate(generics.CreateAPIView):
+    queryset = StudentProfile.objects.all()
+    serializer_class = StudentProfileSerializer
+    # permission_classes =[IsAuthenticated & IsAuthOrReadOnly]
+    
+    
+    def get_queryset(self):
+        # just return the subjectteacher object
+        return StudentProfile.objects.all()
+     
+    
+    def perform_create(self,serializer):
+        
+        pk = self.kwargs.get('pk')
+        
+        # get movie
+        user= User.objects.get(pk=pk)
+        
+        guardian = serializer.validated_data['guardian']
+        local_govt = serializer.validated_data['local_govt']
+        address = serializer.validated_data['address']
+        session_admitted = serializer.validated_data['session_admitted']
+        term_admitted = serializer.validated_data['term_admitted']
+        class_admitted = serializer.validated_data['class_admitted']
+        
+        
+        serializer.save(user=user)
+
+    
+class StudentProfileDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = StudentProfile.objects.all()
     serializer_class = StudentProfileSerializer
     # permission_classes =[IsAuthenticated & IsAuthOrReadOnly]
     
 
-class TeacherProfileCreateAPIView(generics.ListCreateAPIView):
-    # ListCreateAPIView gives us both the get and post methods
+# class TeacherProfileCreateAPIView(generics.ListCreateAPIView):
+#     # ListCreateAPIView gives us both the get and post methods
+#     queryset = TeacherProfile.objects.all()
+#     serializer_class = TeacherProfileSerializer
+#     # permission_classes =[IsAuthenticated & IsAuthOrReadOnly]
+
+class TeacherProfileCreateAPIView(generics.CreateAPIView):
     queryset = TeacherProfile.objects.all()
     serializer_class = TeacherProfileSerializer
     # permission_classes =[IsAuthenticated & IsAuthOrReadOnly]
     
-class TeacherProfileClassDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    
+    def get_queryset(self):
+        # just return the subjectteacher object
+        return TeacherProfile.objects.all()
+     
+    
+    def perform_create(self,serializer):
+        
+        pk = self.kwargs.get('pk')
+        
+        # get movie
+        user= User.objects.get(pk=pk)
+        
+        qualification = serializer.validated_data['qualification']
+        local_govt = serializer.validated_data['local_govt']
+        address = serializer.validated_data['address']
+        
+        serializer.save(user=user)
+    
+class TeacherProfileDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = TeacherProfile.objects.all()
     serializer_class = TeacherProfileSerializer
     # permission_classes =[IsAuthenticated & IsAuthOrReadOnly]
@@ -313,17 +371,47 @@ class ScoresCreateAPIView(generics.CreateAPIView):
         
         pk = self.kwargs.get('pk')
         
-        # get movie
+        # get user
         user= User.objects.get(pk=pk)
         
         term = serializer.validated_data['term']
         studentclass = serializer.validated_data['studentclass']
         session = serializer.validated_data['session']
         subject = serializer.validated_data['subject']
+        firstscore = serializer.validated_data['firstscore']
+        secondscore = serializer.validated_data['secondscore']
+        thirdscore = serializer.validated_data['thirdscore']
+        examscore = serializer.validated_data['examscore']
+        
+        totalca = 0
+        subjecttotal =0
+        
+        if math.isnan(firstscore):
+            firstscore = 0
+        else:
+            firstscore = firstscore
+        
+        if math.isnan(secondscore):
+            secondscore = 0
+        else:
+            secondscore = secondscore
+        
+        if math.isnan(thirdscore):
+            firstscore = 0
+        else:
+            thirdscore = thirdscore
+        
+        if math.isnan(examscore):
+            examscore = 0
+        else:
+            examscore = examscore
+        
+        totalca = firstscore + secondscore + thirdscore
+        subjecttotal = totalca + examscore
         
         teacher = self.request.user
         
-        _isteacher = SubjectTeacher.objects.filter(teacher=teacher,classroom=studentclass,session=session,subject=subject)
+        _isteacher = SubjectTeacher.objects.filter(teacher_id=teacher.pk,classroom=studentclass.pk,session=session.pk,subject=subject.pk)
         if not _isteacher:
             raise ValidationError("You are not a subject teacher for this class")
             
@@ -335,7 +423,28 @@ class ScoresCreateAPIView(generics.CreateAPIView):
             
             raise ValidationError("Record already exist")
         
-        serializer.save(user=user,subjectteacher=SubjectTeacher.objects.get(pk=teacher.pk))
+        serializer.save(user=user,subjectteacher=SubjectTeacher.objects.get(teacher=teacher),firstscore=firstscore,secondscore=secondscore,thirdscore=thirdscore,totalca=totalca,subjecttotal=subjecttotal)
+        processScores(subject,studentclass,term,session)
+        
+        
+# get scores based on subject, term, session and class
+class FindScoresAPIView(APIView):
+    def get(self, request):
+        payload = request.query_params
+        
+        subjObj = Subject.objects.get(pk=payload.get('subject'))
+        classObj = SchoolClass.objects.get(pk=payload.get('studentclass'))
+        termObj = Term.objects.get(pk=payload.get('term'))
+        sessionObj = Session.objects.get(pk=payload.get('session'))
+
+        # Example usage: filtering queryset based on payload parameters
+        queryset = Scores.objects.filter(subject=subjObj,studentclass=classObj,session=sessionObj,term=termObj)
+        if not queryset:
+            raise ValidationError("No records matching your criteria")
+        
+        # Serialize the data and return the response
+        serializer = ScoresSerializer(queryset, many=True)
+        return Response(serializer.data)
         
 
 # score detail
@@ -372,9 +481,9 @@ class CreateResult(generics.CreateAPIView):
                 
                 loggedInUser = request.user
                 
-                _isteacher = ClassTeacher.objects.filter(tutor=loggedInUser,classroom=classObj,session=sessionObj,term=termObj)
-                if not _isteacher:
-                    raise ValidationError("You are not a class teacher for this class")
+                # _isteacher = ClassTeacher.objects.filter(tutor=loggedInUser,classroom=classObj,session=sessionObj,term=termObj)
+                # if not _isteacher:
+                #     raise ValidationError("You are not a class teacher for this class")
                 
                 
                 # process terminal result
@@ -400,6 +509,91 @@ class CreateResult(generics.CreateAPIView):
                 status = status.HTTP_201_CREATED
                 )
     
+# List all result based on term, class, session
+class ExportSheet(APIView):
+    # serializer_class = ClassroomSerializer
+    # permission_classes = [IsAuthenticated & IsAuthOrReadOnly]
+    
+    def get(self,request):
+        try:
+            payload = request.query_params
+            
+            activeTerm = Term.objects.get(status='True')
+            activeSession = Session.objects.get(status='True')
+            
+            classObj = SchoolClass.objects.get(pk=payload.get('classroom'))
+            subjObj = Subject.objects.get(pk=payload.get('subject'))
+
+            
+            teacher = self.request.user
+        
+            # _isteacher = SubjectTeacher.objects.filter(teacher_id=teacher.pk,classroom=classObj.pk,session=activeSession.pk,subject=subjObj.pk)
+            # if not _isteacher:
+            #     raise ValidationError("You are not a subject teacher for this class")
+
+            response = Response(content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename=CA_SHEET_'+subjObj.name+'_'+classObj.class_name+'_'+activeTerm.name+'_'+activeSession.name+'.csv'
+            writer = csv.writer(response)
+            
+            writer.writerow(['StudentID','Name','Class','Subject','FirstCA','SecondCA','ThirdCA','Exam'])
+            
+            rollcall = Classroom.objects.filter(Q(session=activeSession) & Q(class_room=classObj) & Q(term=activeTerm)).order_by('student__sur_name')
+            # subject = Subject.objects.get(pk=subject)
+            
+            for item in rollcall:
+                writer.writerow([item.student.pk,item.student.sur_name + "  " + item.student.first_name,classObj.class_name,subjObj.subject_code,0,0,0,0])
+
+            return response
+    
+        except Exception as e:
+            
+            raise ValidationError("Unable to download the sheet")
+
+# export sheet 
+# class ExportSheet(generics.ListAPIView):
+#     # queryset = User.objects.all()
+#     serializer_class = ClassroomSerializer
+    
+#     def get_queryset(self):
+#         return Classroom.objects.all()
+    
+
+#     def get(self, request, *args, **kwargs):
+#         gender = request.query_params.get('gender', None)
+      
+        
+#         activeTerm = Term.objects.get(status='True')
+#         activeSession = Session.objects.get(status='True')
+        
+#         classObj = SchoolClass.objects.get(pk=self.request.query_params.get('classroom'))
+#         subjObj = Subject.objects.get(pk=self.request.query_params.get('subject'))
+        
+    
+#         rollcall = Classroom.objects.filter(student=1)
+
+      
+
+#         serializer = self.get_serializer(rollcall, many=True)
+
+#         # Generate Excel file
+#         workbook = Workbook()
+#         worksheet = workbook.active
+
+#         # Write headers
+#         headers = ['Name', 'Gender', 'Email']
+#         worksheet.append(headers)
+
+#         # Write user records
+#         for user in serializer.data:
+#             row = [user['term'], user['class_room'], user['session']]
+#             worksheet.append(row)
+
+#         # Create response with Excel file
+#         response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+#         response['Content-Disposition'] = 'attachment; filename=users.xlsx'
+#         workbook.save(response)
+
+#         return response
 
 
 # List all result based on term, class, session
@@ -408,12 +602,17 @@ class GetResult(generics.ListAPIView):
     # permission_classes = [IsAuthenticated & IsAuthOrReadOnly]
     
     def get_queryset(self):
-        _class = self.request.data.get('classroom')
-        _session = self.request.data.get('session')
-        _term = self.request.data.get('term')
+        # _class = self.request.data.get('classroom')
+        # _session = self.request.data.get('session')
+        # _term = self.request.data.get('term')
+        payload = self.request.query_params
+        
+        classObj = SchoolClass.objects.get(pk=payload.get('classroom'))
+        termObj = Term.objects.get(pk=payload.get('term'))
+        sessionObj = Session.objects.get(pk=payload.get('session'))
         
         # Example: Fetching data based on a filter field named 'filter_field'
-        queryset = Result.objects.filter(studentclass=_class,session=_session,term=_term)
+        queryset = Result.objects.filter(studentclass=classObj,session=sessionObj,term=termObj)
         
         if not queryset:
             raise ValidationError("No records matching your criteria")
@@ -468,9 +667,9 @@ class CreateStudentAffectiveTraits(generics.CreateAPIView):
                 
                 loggedInUser = request.user
                 
-                _isteacher = ClassTeacher.objects.filter(tutor=loggedInUser,classroom=classObj,session=sessionObj,term=termObj)
-                if not _isteacher:
-                    raise ValidationError("You are not a class teacher for this class")
+                # _isteacher = ClassTeacher.objects.filter(tutor=loggedInUser,classroom=classObj,session=sessionObj,term=termObj)
+                # if not _isteacher:
+                #     raise ValidationError("You are not a class teacher for this class")
                 
                 
                # proccess Affective domain
@@ -509,9 +708,9 @@ class CreateStudentPsychoTraits(generics.CreateAPIView):
                 
                 loggedInUser = request.user
                 
-                _isteacher = ClassTeacher.objects.filter(tutor=loggedInUser,classroom=classObj,session=sessionObj,term=termObj)
-                if not _isteacher:
-                    raise ValidationError("You are not a class teacher for this class")
+                # _isteacher = ClassTeacher.objects.filter(tutor=loggedInUser,classroom=classObj,session=sessionObj,term=termObj)
+                # if not _isteacher:
+                #     raise ValidationError("You are not a class teacher for this class")
 
                 # process Psychomotor domain
                 processPsycho(classObj,sessionObj,termObj)
@@ -525,6 +724,52 @@ class CreateStudentPsychoTraits(generics.CreateAPIView):
                 status = status.HTTP_201_CREATED
                 )
         
+        
+        
+class AddAutoComents(generics.CreateAPIView):
+    serializer_class = ResultSerializer
+    # permission_classes = [IsAuthenticated & IsAuthOrReadOnly]
+    
+    def get_queryset(self):
+        # just return the review object
+        return Result.objects.all()
+    
+    def post(self, request, *args, **kwargs):
+        
+        
+        with transaction.atomic():
+            
+            try:
+                # Access form values from the request object
+                _class = request.data.get('studentclass')
+                term = request.data.get('term')
+                session = request.data.get('session')
+                
+                classObj = SchoolClass.objects.get(pk=_class)
+                termObj = Term.objects.get(pk=term)
+                sessionObj = Session.objects.get(pk=session)
+                
+                loggedInUser = request.user
+                
+                # _isteacher = ClassTeacher.objects.filter(tutor=loggedInUser,classroom=classObj,session=sessionObj,term=termObj)
+                
+                # if not _isteacher:
+                #     raise ValidationError("You are not a class teacher for this class")
+                
+                scores = Scores.objects.filter(session=sessionObj,term=termObj,studentclass=classObj).exists()
+
+                if not scores:
+                    raise ValidationError("You are not a class teacher for this class")
+                    # Add auto comment
+                autoAddComment(classObj,sessionObj,termObj)
+
+            except Exception as e:
+                raise ValidationError(e)
+           
+        return Response(
+                {'msg':'comments created successfully'},
+                status = status.HTTP_201_CREATED
+                )    
 
 # ratings
 class RatingCreateAPIView(generics.ListCreateAPIView):
@@ -630,9 +875,11 @@ class EnrollStudent(generics.CreateAPIView):
                 activeTerm = Term.objects.get(status='True')
                 activeSession = Session.objects.get(status='True')
                 # Access form values from the request object
-                _class = request.data.get('studentclass')
-                admission_number = request.data.get('admission_number')
+                _class = request.data.get('class_room')
+                admission_number = request.data.get('student')
+            
                 student = StudentProfile.objects.get(admission_number=admission_number)
+                
                 classObj = SchoolClass.objects.get(pk=_class)
                 
                 
@@ -658,26 +905,43 @@ class EnrollStudent(generics.CreateAPIView):
                 status = status.HTTP_201_CREATED
                 )
         
-# List all student in classroom based on term, class, session
-class RollCall(generics.ListAPIView):
-    serializer_class = ClassroomSerializer
-    # permission_classes = [IsAuthenticated & IsAuthOrReadOnly]
+# # List all student in classroom based on term, class, session
+# class RollCall(generics.ListAPIView):
+#     serializer_class = ClassroomSerializer
+#     # permission_classes = [IsAuthenticated & IsAuthOrReadOnly]
     
-    def get_queryset(self):
+#     def get_queryset(self):
         
-        _class = self.request.data.get('classroom')
-        _term = self.request.data.get('term')
-        _session = self.request.data.get('session')
+#         _class = self.request.data.get('classroom')
+#         _term = self.request.data.get('term')
+#         _session = self.request.data.get('session')
+#         # classObj = SchoolClass.objects.get(pk=_class)
+#         termObj = Term.objects.get(pk=_term)
+#         sessionObj = Session.objects.get(pk=_session)
         
-        classObj = SchoolClass.objects.get(pk=_class)
-        termObj = Term.objects.get(pk=_term)
-        sessionObj = Session.objects.get(pk=_session)
+#         queryset = Classroom.objects.filter(session=sessionObj,term=termObj)
         
+#         if not queryset:
+#             raise ValidationError("No records matching your criteria")
+#         return queryset
+    
+class RollCallAPIView(APIView):
+    def get(self, request):
+        payload = request.query_params
+        # Access the query parameters
+        # Use payload to filter and retrieve the desired records
+        classObj = SchoolClass.objects.get(pk=payload.get('classroom'))
+        termObj = Term.objects.get(pk=payload.get('term'))
+        sessionObj = Session.objects.get(pk=payload.get('session'))
+
+        # Example usage: filtering queryset based on payload parameters
         queryset = Classroom.objects.filter(class_room=classObj,session=sessionObj,term=termObj)
-        
         if not queryset:
             raise ValidationError("No records matching your criteria")
-        return queryset
+        
+        # Serialize the data and return the response
+        serializer = ClassroomSerializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 # Detail Classroom

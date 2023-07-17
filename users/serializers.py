@@ -12,17 +12,35 @@ User = get_user_model()
 # other serializers
 
 class StudentProfileSerializer(serializers.ModelSerializer): #child model
-   
+    
+    user = serializers.StringRelatedField()
+    term_name = serializers.SerializerMethodField()
+    session_name = serializers.SerializerMethodField()
+    class_name = serializers.SerializerMethodField()
     class Meta:
         model = StudentProfile
         fields = "__all__"
+    
+    def get_term_name(self,object):
+               
+        term = Term.objects.get(pk=object.term_admitted.pk)
+        return term.name
+    
+    def get_session_name(self,object):
+               
+        session = Session.objects.get(pk=object.session_admitted.pk)
+        return session.name
+    
+    def get_class_name(self,object):
+               
+        classObj = SchoolClass.objects.get(pk=object.class_admitted.pk)
+        return classObj.class_name
         
    
 # user app
 class UserSerializer(serializers.ModelSerializer):
     studentprofile = StudentProfileSerializer(read_only=True) #parent model
    
-    
     class Meta:
         model = User
         # fields = ('id','username','first_name')
@@ -31,7 +49,7 @@ class UserSerializer(serializers.ModelSerializer):
  
 
 class TeacherProfileSerializer(serializers.ModelSerializer):
-    
+    user = serializers.StringRelatedField()
     class Meta:
         model = TeacherProfile
         fields = "__all__"       

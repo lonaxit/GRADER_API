@@ -103,6 +103,7 @@ class SubjectTeacherSerializer(serializers.ModelSerializer):
     session_name = serializers.SerializerMethodField()
     subject_name = serializers.SerializerMethodField()
     class_name = serializers.SerializerMethodField()
+    teacherid = serializers.SerializerMethodField()
 
     class Meta:
         model = SubjectTeacher
@@ -112,6 +113,10 @@ class SubjectTeacherSerializer(serializers.ModelSerializer):
                
         teacherObj = User.objects.get(pk=object.teacher.pk)
         return teacherObj.sur_name + ' ' + teacherObj.first_name
+    def get_teacherid(self,object):
+               
+        teacherObj = User.objects.get(pk=object.teacher.pk)
+        return teacherObj.pk
     
     def get_session_name(self,object):
                
@@ -155,7 +160,7 @@ class ClassTeacherSerializer(serializers.ModelSerializer):
     
     def get_term_name(self,object):
                
-        term = Session.objects.get(pk=object.term.pk)
+        term = Term.objects.get(pk=object.term.pk)
         return term.name
     
     def get_class_name(self,object):
@@ -168,41 +173,83 @@ class ClassTeacherSerializer(serializers.ModelSerializer):
 class ScoresSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField(read_only=True)
     subjectteacher = serializers.StringRelatedField(read_only=True)
-    # teacher_name = serializers.SerializerMethodField()
-    # session_name = serializers.SerializerMethodField()
-    # class_name = serializers.SerializerMethodField()
-    # term_name = serializers.SerializerMethodField()
+    student_name = serializers.SerializerMethodField()
+    session_name = serializers.SerializerMethodField()
+    class_name = serializers.SerializerMethodField()
+    term_name = serializers.SerializerMethodField()
+    subject_name = serializers.SerializerMethodField()
 
     class Meta:
         model = Scores
         fields = "__all__"
     
-    # def get_teacher_name(self,object):
+    def get_student_name(self,object):
                
-    #     teacherObj = User.objects.get(pk=object.tutor.pk)
-    #     return teacherObj.sur_name + ' ' + teacherObj.first_name
+        studentObj = User.objects.get(pk=object.user.pk)
+        return studentObj.sur_name + ' ' + studentObj.first_name
     
-    # def get_session_name(self,object):
+    def get_session_name(self,object):
                
-    #     session = Session.objects.get(pk=object.session.pk)
-    #     return session.name
+        session = Session.objects.get(pk=object.session.pk)
+        return session.code
     
-    # def get_term_name(self,object):
+    def get_term_name(self,object):
                
-    #     term = Session.objects.get(pk=object.term.pk)
-    #     return term.name
+        term =  Term.objects.get(pk=object.term.pk)
+        return term.code
     
-    # def get_class_name(self,object):
+    def get_class_name(self,object):
                
-    #     _class = SchoolClass.objects.get(pk=object.classroom.pk)
-    #     return _class.class_name
+        _class = SchoolClass.objects.get(pk=object.studentclass.pk)
+        return _class.code
+    
+    def get_subject_name(self,object):
+               
+        _subj = Subject.objects.get(pk=object.subject.pk)
+        return _subj.subject_code
     
 
 class ResultSerializer(serializers.ModelSerializer):
+    student_name = serializers.SerializerMethodField()
+    classteacher_name = serializers.SerializerMethodField()
+    session_name = serializers.SerializerMethodField()
+    class_name = serializers.SerializerMethodField()
+    term_name = serializers.SerializerMethodField()
+    # subject_name = serializers.SerializerMethodField()
 
     class Meta:
         model = Result
         fields = "__all__"
+    
+    def get_student_name(self,object):
+               
+        studentObj = User.objects.get(pk=object.student.pk)
+        return studentObj.sur_name + ' ' + studentObj.first_name
+    
+    def get_classteacher_name(self,object):
+               
+        teacherObj = User.objects.get(pk=object.classteacher.pk)
+        return teacherObj.sur_name
+    
+    def get_session_name(self,object):
+               
+        session = Session.objects.get(pk=object.session.pk)
+        return session.code
+    
+    def get_term_name(self,object):
+               
+        term =  Term.objects.get(pk=object.term.pk)
+        return term.code
+    
+    def get_class_name(self,object):
+               
+        _class = SchoolClass.objects.get(pk=object.studentclass.pk)
+        return _class.code
+    
+    # def get_subject_name(self,object):
+               
+    #     _subj = Subject.objects.get(pk=object.subject.pk)
+    #     return _subj.subject_code
 
 class RatingSerializer(serializers.ModelSerializer):
     class Meta:

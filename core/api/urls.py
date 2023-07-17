@@ -3,7 +3,6 @@ from django.urls import path,include
 from core.api.views import *
 
 urlpatterns =[
-    
     path("term/", TermListCreateAPIView.as_view(), name="term"),
     path("term-detail/<int:pk>/", TermDetailAPIView.as_view(), name="term-detail"),
     
@@ -26,18 +25,20 @@ urlpatterns =[
     path("resumption-setting/", ResumptionSettingsCreateAPIView.as_view(), name="resumption-setting"),
     path("resumptionsetting-detail/<int:pk>/", ResumptionSettingsClassDetailAPIView.as_view(), name="resumptionsetting-detail"),
     
-    
-    path("student-profile/", StudentProfileCreateAPIView.as_view(), name="student-profile"),
-    path("studentprofile-detail/<int:pk>/", StudentProfileClassDetailAPIView.as_view(), name="studentprofile-detail"),
-    
-    
-    path("teacher-profile/", TeacherProfileCreateAPIView.as_view(), name="teacher-profile"),
-    path("teacherprofile-detail/<int:pk>/", TeacherProfileClassDetailAPIView.as_view(), name="teacherprofile-detail"),
+    path("student-profile/<int:pk>/", StudentProfileCreate.as_view(), name="studentprofile"),
+    path("student-profile/", StudentProfileListAPIView.as_view(), name="student-profile"),
+    path("studentprofile-detail/<int:pk>/", StudentProfileDetailAPIView.as_view(), name="studentprofile-detail"),
     
     
+    path("teacher-profile/<int:pk>/", TeacherProfileCreateAPIView.as_view(), name="teacher-profile"),
+    
+    #  path("teacher-profile/", TeacherProfileCreateAPIView.as_view(), name="teacher-profile"),
+    path("teacherprofile-detail/<int:pk>/", TeacherProfileDetailAPIView.as_view(), name="teacherprofile-detail"),
+    
+    
+     path("create-subject-teacher/<int:pk>/", SubjectTeacherCreateAPIView.as_view(), name="create-subject-teacher"),
+     
     path("list-subjectteacher/", SubjectTeacherListAPIView.as_view(), name="list-subjectteacher"),
-    
-    path("create-subject-teacher/<int:pk>/", SubjectTeacherCreateAPIView.as_view(), name="create-subject-teacher"),
     
     path("subjectteacher-detail/<int:pk>/", SubjectTeacherClassDetailAPIView.as_view(), name="subjectteacher-detail"),
     
@@ -54,10 +55,14 @@ urlpatterns =[
     path("toggle-classteacher/<int:pk>/", ToggleClassTeacherAPIView.as_view(), name="toggle-classteacher"),
     
     # endpoints for scores
-     path("list-scores/", ScoresListAPIView.as_view(), name="list-scores"),
+    path("list-scores/", ScoresListAPIView.as_view(), name="list-scores"),
     #  create new sccores using user id
     path("new-score/<int:pk>/", ScoresCreateAPIView.as_view(), name="new-score"),
+    path("filter-scores/", FindScoresAPIView.as_view(), name="filter-scores"),
     path("scores-detail/<int:pk>/", ScoresDetailAPIView.as_view(), name="scores-detail"),
+    
+    
+    path("export-sheet/",ExportSheet.as_view(),name="export-sheet"),
     
     # endpoint for creating result
     path("create-result/",CreateResult.as_view(), name="create-result"),
@@ -72,6 +77,8 @@ urlpatterns =[
     # rating
      path("create-rating/",RatingCreateAPIView.as_view(), name="create-rating"),
      path("rating-detail/<int:pk>/",RatingDetailAPIView.as_view(), name="rating-detail"),
+     
+     
     #  psychomotor
     path("create-pyschomotor/", PsychomotorCreateListAPIView.as_view(), name="create-psychomotor"),
     path("pyschomotor-detail/<int:pk>/", PyschomotorDetailAPIView.as_view(), name="psychomotor-detail"),
@@ -83,7 +90,9 @@ urlpatterns =[
     # create traits
     path("createaffective-traits/",CreateStudentAffectiveTraits.as_view(), name="createaffective-traits"),
     path("createpsycho-traits/",CreateStudentPsychoTraits.as_view(), name="createpsycho-traits"),
-   
+
+    # auto comments
+    path("auto-comments/", AddAutoComents.as_view(), name="auto-coments"),
     
     # fetch traits using term, session, class and userid 
     path("student/affectivetraits/<int:userid>/<int:session>/<int:classroom>/<int:term>/",GetStudentAffectiveTraits.as_view(), name="get-studentaffective"),
@@ -93,7 +102,7 @@ urlpatterns =[
     # Enrollment
     path("new-enrollment/",EnrollStudent.as_view(), name="new-enrollment"),
     
-    path("roll-call/",RollCall.as_view(), name="roll-call"),
+    path("roll-call/",RollCallAPIView.as_view(), name="roll-call"),
     
     path("rollcall-detail/<int:pk>/",ClassroomDetailAPIView.as_view(), name="roll-call"),
     

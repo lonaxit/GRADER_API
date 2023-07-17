@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-dfg=5b@%p+n0l23l2k2@k61j)bbwlw0gtl4$r!pt2q)(#z39@m
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -47,9 +47,23 @@ INSTALLED_APPS = [
     
 ]
 
+CORS_ORIGIN_ALLOW_ALL = True
+
+# CORS_ORIGIN_WHITELIST = (
+#     'https://midastouchonline.co',
+# )
+
+CORS_ALLOW_ALL_ORIGINS: False
+
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8080",
+    "http://localhost:8080"
+    # "https://midastouchonline.co",
+  
 ]
+
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:8080",
+# ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
