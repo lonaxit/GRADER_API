@@ -2,7 +2,9 @@ import random
 import string
 import math
 import json
-import io, csv, pandas as pd
+from io import BytesIO
+
+import pandas as pd
 from users.serializers import *
 from core.api.serializers import *
 # from profiles.api.serializers import *
@@ -32,6 +34,9 @@ from rest_framework.parsers import MultiPartParser,FormParser
 
 import openpyxl
 from openpyxl import Workbook
+from rest_framework.renderers import JSONRenderer
+from drf_excel.mixins import XLSXFileMixin
+from drf_excel.renderers import XLSXRenderer
 User = get_user_model()
 
 from core.api.utilities import *
@@ -510,90 +515,110 @@ class CreateResult(generics.CreateAPIView):
                 )
     
 # List all result based on term, class, session
-class ExportSheet(APIView):
-    # serializer_class = ClassroomSerializer
-    # permission_classes = [IsAuthenticated & IsAuthOrReadOnly]
+# class ExportSheet(APIView):
+#     # serializer_class = ClassroomSerializer
+#     # permission_classes = [IsAuthenticated & IsAuthOrReadOnly]
+#     renderer_classes = [XLSXRenderer, JSONRenderer]
     
-    def get(self,request):
-        try:
-            payload = request.query_params
+#     def get(self,request):
+#         try:
+#             payload = request.query_params
             
-            activeTerm = Term.objects.get(status='True')
-            activeSession = Session.objects.get(status='True')
+#             activeTerm = Term.objects.get(status='True')
+#             activeSession = Session.objects.get(status='True')
             
-            classObj = SchoolClass.objects.get(pk=payload.get('classroom'))
-            subjObj = Subject.objects.get(pk=payload.get('subject'))
+#             classObj = SchoolClass.objects.get(pk=payload.get('classroom'))
+#             subjObj = Subject.objects.get(pk=payload.get('subject'))
 
             
-            teacher = self.request.user
+#             teacher = self.request.user
         
-            # _isteacher = SubjectTeacher.objects.filter(teacher_id=teacher.pk,classroom=classObj.pk,session=activeSession.pk,subject=subjObj.pk)
-            # if not _isteacher:
-            #     raise ValidationError("You are not a subject teacher for this class")
+#             # _isteacher = SubjectTeacher.objects.filter(teacher_id=teacher.pk,classroom=classObj.pk,session=activeSession.pk,subject=subjObj.pk)
+#             # if not _isteacher:
+#             #     raise ValidationError("You are not a subject teacher for this class")
 
-            response = Response(content_type='text/csv')
-            response['Content-Disposition'] = 'attachment; filename=CA_SHEET_'+subjObj.name+'_'+classObj.class_name+'_'+activeTerm.name+'_'+activeSession.name+'.csv'
-            writer = csv.writer(response)
+#             response = Response(content_type='text/csv')
+#             response['Content-Disposition'] = 'attachment; filename=CA_SHEET_'+subjObj.name+'_'+classObj.class_name+'_'+activeTerm.name+'_'+activeSession.name+'.csv'
+#             writer = csv.writer(response)
             
-            writer.writerow(['StudentID','Name','Class','Subject','FirstCA','SecondCA','ThirdCA','Exam'])
+#             writer.writerow(['StudentID','Name','Class','Subject','FirstCA','SecondCA','ThirdCA','Exam'])
             
-            rollcall = Classroom.objects.filter(Q(session=activeSession) & Q(class_room=classObj) & Q(term=activeTerm)).order_by('student__sur_name')
-            # subject = Subject.objects.get(pk=subject)
+#             rollcall = Classroom.objects.filter(Q(session=activeSession) & Q(class_room=classObj) & Q(term=activeTerm)).order_by('student__sur_name')
+#             # subject = Subject.objects.get(pk=subject)
             
-            for item in rollcall:
-                writer.writerow([item.student.pk,item.student.sur_name + "  " + item.student.first_name,classObj.class_name,subjObj.subject_code,0,0,0,0])
+#             for item in rollcall:
+#                 writer.writerow([item.student.pk,item.student.sur_name + "  " + item.student.first_name,classObj.class_name,subjObj.subject_code,0,0,0,0])
 
-            return response
+#             return response
     
-        except Exception as e:
+#         except Exception as e:
             
-            raise ValidationError("Unable to download the sheet")
+#             raise ValidationError("Unable to download the sheet")
 
 # export sheet 
-# class ExportSheet(generics.ListAPIView):
-#     # queryset = User.objects.all()
-#     serializer_class = ClassroomSerializer
+class ExportSheet(APIView):
     
-#     def get_queryset(self):
-#         return Classroom.objects.all()
+    serializer_class = ClassroomSerializer
+    renderer_classes = (XLSXRenderer,)
+    def get_serializer(self, *args, **kwargs):
+        # Implement your serializer logic here
+        serializer = ClassroomSerializer(*args, **kwargs)
+        return serializer
+    def get(self, request):
+        user_sub_fund_data = Classroom.objects.all()
+        serializer = ClassroomSerializer(user_sub_fund_data, many=True)
+        response = Response(serializer.data)
+        response['content-disposition'] = 'attachment; filename=mynewfilename.xlsx'
+        response['content-type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+
+        return response
+        
+        # return Response(serializer.data, headers={"content-disposition":"attachment; filename=mynewfilename.xlsx"})
+    
+    # queryset = User.objects.all()
+    # serializer_class = ClassroomSerializer
+    # renderer_classes = [XLSXRenderer, JSONRenderer]
+    
+    # def get_queryset(self):
+    #     return Classroom.objects.all()
     
 
-#     def get(self, request, *args, **kwargs):
-#         gender = request.query_params.get('gender', None)
+    # def get(self, request, *args, **kwargs):
+        
       
         
-#         activeTerm = Term.objects.get(status='True')
-#         activeSession = Session.objects.get(status='True')
+    #     activeTerm = Term.objects.get(status='True')
+    #     activeSession = Session.objects.get(status='True')
         
-#         classObj = SchoolClass.objects.get(pk=self.request.query_params.get('classroom'))
-#         subjObj = Subject.objects.get(pk=self.request.query_params.get('subject'))
+    #     classObj = SchoolClass.objects.get(pk=self.request.query_params.get('classroom'))
+    #     subjObj = Subject.objects.get(pk=self.request.query_params.get('subject'))
         
     
-#         rollcall = Classroom.objects.filter(student=1)
+    #     rollcall = Classroom.objects.filter(student=1)
 
       
 
-#         serializer = self.get_serializer(rollcall, many=True)
+    #     serializer = self.get_serializer(rollcall, many=True)
 
-#         # Generate Excel file
-#         workbook = Workbook()
-#         worksheet = workbook.active
+    #     # Generate Excel file
+    #     workbook = Workbook()
+    #     worksheet = workbook.active
 
-#         # Write headers
-#         headers = ['Name', 'Gender', 'Email']
-#         worksheet.append(headers)
+    #     # Write headers
+    #     headers = ['Name', 'Gender', 'Email']
+    #     worksheet.append(headers)
 
-#         # Write user records
-#         for user in serializer.data:
-#             row = [user['term'], user['class_room'], user['session']]
-#             worksheet.append(row)
+    #     # Write user records
+    #     for user in serializer.data:
+    #         row = [user['term'], user['class_room'], user['session']]
+    #         worksheet.append(row)
 
-#         # Create response with Excel file
-#         response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-#         response['Content-Disposition'] = 'attachment; filename=users.xlsx'
-#         workbook.save(response)
+    #     # Create response with Excel file
+    #     response = Response(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    #     response['Content-Disposition'] = 'attachment; filename=users.xlsx'
+    #     workbook.save(response)
 
-#         return response
+    #     return response
 
 
 # List all result based on term, class, session
