@@ -1,18 +1,64 @@
 from dataclasses import fields
 import profile
 from rest_framework import serializers
+from core.api.serializers import *
 
 
 # IMPORT CUSTOM USER
 from django.contrib.auth import get_user_model
-# from core.api.serializers import *
+
 User = get_user_model()
 
+# other serializers
+
+class StudentProfileSerializer(serializers.ModelSerializer): #child model
+    
+    user = serializers.StringRelatedField()
+    term_name = serializers.SerializerMethodField()
+    session_name = serializers.SerializerMethodField()
+    class_name = serializers.SerializerMethodField()
+    class Meta:
+        model = StudentProfile
+        fields = "__all__"
+    
+    def get_term_name(self,object):
+               
+        term = Term.objects.get(pk=object.term_admitted.pk)
+        return term.name
+    
+    def get_session_name(self,object):
+               
+        session = Session.objects.get(pk=object.session_admitted.pk)
+        return session.name
+    
+    def get_class_name(self,object):
+               
+        classObj = SchoolClass.objects.get(pk=object.class_admitted.pk)
+        return classObj.class_name
+        
+   
 # user app
 class UserSerializer(serializers.ModelSerializer):
-    
-    # savinguser = SavingSerializer(many=True,read_only=True)
-    # totalSaving = serializers.SerializerMethodField()
+    studentprofile = StudentProfileSerializer(read_only=True) #parent model
+   
+    class Meta:
+        model = User
+        # fields = ('id','username','first_name')
+        # fields = '__all__'
+        exclude=('password','last_login','is_superuser','user_permissions','groups',)
+ 
+
+class TeacherProfileSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField()
+    class Meta:
+        model = TeacherProfile
+        fields = "__all__"       
+   
+   
+        
+class UserTeacherSerializer(serializers.ModelSerializer):
+    teacherprofile = TeacherProfileSerializer(read_only=True) #parent model
+   
     
     class Meta:
         model = User
@@ -20,6 +66,10 @@ class UserSerializer(serializers.ModelSerializer):
         # fields = '__all__'
         exclude=('password','last_login','is_superuser','user_permissions','groups',)
         
+        
+        
+
+
 
 # 
 class UpdateUserPasswordSerializer(serializers.ModelSerializer):
