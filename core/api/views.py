@@ -10,7 +10,7 @@ from core.api.serializers import *
 # from profiles.api.serializers import *
 from core.api.permissions import *
 # from core.api.utilities import *
-# from django.http import HttpResponse,JsonResponse
+from django.http import HttpResponse,JsonResponse
 
 import csv
 
@@ -557,69 +557,158 @@ class CreateResult(generics.CreateAPIView):
 
 # export sheet 
 class ExportSheet(APIView):
-    
-    serializer_class = ClassroomSerializer
-    renderer_classes = (XLSXRenderer,)
-    def get_serializer(self, *args, **kwargs):
-        # Implement your serializer logic here
-        serializer = ClassroomSerializer(*args, **kwargs)
-        return serializer
+    # 1 this works Adopt this one
     def get(self, request):
-        user_sub_fund_data = Classroom.objects.all()
-        serializer = ClassroomSerializer(user_sub_fund_data, many=True)
-        response = Response(serializer.data)
-        response['content-disposition'] = 'attachment; filename=mynewfilename.xlsx'
-        response['content-type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        
+        payload = request.query_params
+        
+        classname = payload.get('classname')
+        subjname = payload.get('subjname')
+        classid = payload.get('classid')
+        subjectid = payload.get('subjectid')
+        
+        classObj = SchoolClass.objects.get(pk=classid)    
+        activeTerm = Term.objects.get(status='True')
+        activeSession = Session.objects.get(status='True')
+        
+        rollcall = Classroom.objects.filter(Q(session=activeSession) & Q(class_room=classObj) & Q(term=activeTerm)).order_by('student__sur_name')
+
+        # Create an in-memory Excel workbook
+        wb = openpyxl.Workbook()
+        ws = wb.active
+
+        # Write headers to the worksheet
+        headers = ['STDID', 'NAME', 'CLASS','CLASSID','SUBJNAME','SUBJID','TRM','SESS','CA1','CA2','CA3','EXAM']
+        ws.append(headers)
+
+        # Write data to the worksheet
+        for item in rollcall:
+            row = [item.student.id,item.student.sur_name +' '+ item.student.first_name, classname,classid,subjname, subjectid, activeTerm.name,activeSession.name,0,0,0,0]
+            ws.append(row)
+
+        # Create a response object with the appropriate content type and headers
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=your_data.xlsx'
+
+        # Save the workbook to the response
+        wb.save(response)
 
         return response
-        
-        # return Response(serializer.data, headers={"content-disposition":"attachment; filename=mynewfilename.xlsx"})
     
-    # queryset = User.objects.all()
-    # serializer_class = ClassroomSerializer
-    # renderer_classes = [XLSXRenderer, JSONRenderer]
     
-    # def get_queryset(self):
-    #     return Classroom.objects.all()
-    
-
-    # def get(self, request, *args, **kwargs):
+    # 2 works as well 
+    # def get(self, request):
         
-      
-        
-    #     activeTerm = Term.objects.get(status='True')
-    #     activeSession = Session.objects.get(status='True')
-        
-    #     classObj = SchoolClass.objects.get(pk=self.request.query_params.get('classroom'))
-    #     subjObj = Subject.objects.get(pk=self.request.query_params.get('subject'))
-        
-    
-    #     rollcall = Classroom.objects.filter(student=1)
-
-      
-
-    #     serializer = self.get_serializer(rollcall, many=True)
-
-    #     # Generate Excel file
-    #     workbook = Workbook()
-    #     worksheet = workbook.active
-
-    #     # Write headers
-    #     headers = ['Name', 'Gender', 'Email']
-    #     worksheet.append(headers)
-
-    #     # Write user records
-    #     for user in serializer.data:
-    #         row = [user['term'], user['class_room'], user['session']]
-    #         worksheet.append(row)
-
-    #     # Create response with Excel file
-    #     response = Response(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    #     response['Content-Disposition'] = 'attachment; filename=users.xlsx'
-    #     workbook.save(response)
+    #     custom_header = ['Product1', 'Price2','Product3', 'Price4','Product5', 'Price6','Product7', 'Price8']
+    #     userObj = Classroom.objects.all()
+    #     serializer = ClassroomSerializer(userObj, many=True)
+    #     df = pd.DataFrame(serializer.data)
+    #     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    #     response['Content-Disposition'] = 'attachment; filename="out.xlsx"'
+    #     df.to_excel(response, na_rep='N/A', header=custom_header, index=False)
 
     #     return response
+ 
 
+# upload/import CA EXCEL SHEET
+class ImportAssessment(generics.CreateAPIView):
+    serializer_class = ScoresSerializer
+    parser_classes = (MultiPartParser, FormParser,)
+    permission_classes = [IsAuthenticated & IsAuthOrReadOnly]
+    
+    def get_queryset(self):
+        # just return the review object
+        return Scores.objects.all()
+    
+    def post(self, request, *args, **kwargs):
+        
+        with transaction.atomic():
+              
+            try:
+                 if 'file' not in request.FILES:
+                     print(1)
+                     raise ValidationError({"msg":"no file chose"})
+                 else:
+                    data = request.FILES['file']
+                   
+                    reader = pd.read_excel(data)
+                    reader = reader.where(pd.notnull(reader), None)
+                    dtframe = reader
+                  
+                
+                    for dtframe in dtframe.itertuples():
+                        studentObj=User.objects.get(pk=int(dtframe.STDID))
+                        classObj = SchoolClass.objects.get(pk=int(dtframe.CLASSID)) 
+                        subjectObj = Subject.objects.get(pk=int(dtframe.SUBJID))   
+                        activeTerm = Term.objects.get(status='True')
+                        activeSession = Session.objects.get(status='True')
+                     
+                    
+                        # check for subject teacher
+                        teacher = self.request.user
+                     
+                       
+        
+                        _isteacher = SubjectTeacher.objects.filter(teacher_id=teacher.pk,classroom=int(dtframe.CLASSID),session=activeSession.pk,subject=dtframe.SUBJID)
+                        
+                        if not _isteacher:
+                            raise ValidationError("You are not a subject teacher for this class")
+                        else:
+                            # check if studentexist in class
+                            isEnrolled = Classroom.objects.filter(session=activeSession,term=activeTerm,class_room = classObj,student=int(dtframe.STDID)).exists()
+                            if  not isEnrolled:
+                                pass
+                            else:
+                                # check for existence of scores
+                                scoresExist = Scores.objects.filter(session=activeSession,term=activeTerm,subject=int(dtframe.SUBJID),studentclass=int(dtframe.CLASSID),user=int(dtframe.STDID)).exists()
+                    
+                                if scoresExist:
+                                    pass
+                                else:
+                                    
+                                    ca1 = 0
+                                    ca2 = 0
+                                    ca3 = 0
+                                    exam = 0
+                    
+                                    if not math.isnan(dtframe.CA1):
+                                        ca1 = dtframe.CA1
+                                    elif not math.isnan(dtframe.CA2):
+                                        ca2 = dtframe.CA2
+                                    elif not math.isnan(dtframe.CA3):
+                                        ca3 = dtframe.CA3
+                                    elif not math.isnan(dtframe.EXAM):
+                                        exam = dtframe.EXAM
+                        
+                                    obj = Scores.objects.create(
+                                            firstscore=ca1,
+                                            secondscore=ca2,
+                                            thirdscore=ca3,
+                                            totalca=ca1 + ca2 + ca3,
+                                            examscore=exam,
+                                            subjecttotal=exam + ca1 + ca2 + ca3,
+                                            session=activeSession,
+                                            term=activeTerm,
+                                            user=studentObj,
+                                            studentclass=classObj,
+                                            subjectteacher= SubjectTeacher.objects.get(teacher=teacher.pk),
+                                            subject=subjectObj,
+                                        )
+                                        
+                                    obj.save()
+                    
+                                    # process scores
+                    processScores(subjectObj,classObj,activeTerm,activeSession)
+                  
+            except Exception as e:
+                
+                raise ValidationError(e)
+           
+        return Response(
+                {'msg':'Assessment created successfully'},
+                status = status.HTTP_201_CREATED
+                )
+        
 
 # List all result based on term, class, session
 class GetResult(generics.ListAPIView):
@@ -968,7 +1057,25 @@ class RollCallAPIView(APIView):
         serializer = ClassroomSerializer(queryset, many=True)
         return Response(serializer.data)
 
+# roll call for assessment sheet
+class AssessmentSheetRollCallAPIView(APIView):
+    def get(self, request):
+        payload = request.query_params
+        # Access the query parametersF
+        # Use payload to filter and retrieve the desired records
+        activeTerm = Term.objects.get(status='True')
+        activeSession = Session.objects.get(status='True')
+        classObj = SchoolClass.objects.get(pk=payload.get('classroom'))
 
+        # Example usage: filtering queryset based on payload parameters
+        queryset = Classroom.objects.filter(class_room=classObj,session=activeSession,term=activeTerm)
+        if not queryset:
+            raise ValidationError("No records matching your criteria")
+        
+        # Serialize the data and return the response
+        serializer = ClassroomSerializer(queryset, many=True)
+        return Response(serializer.data)
+    
 # Detail Classroom
 class ClassroomDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Classroom.objects.all()

@@ -63,6 +63,7 @@ urlpatterns =[
     
     
     path("export-sheet/",ExportSheet.as_view(),name="export-sheet"),
+    path("import-sheet/",ImportAssessment.as_view(),name="import-sheet"),
     
     # endpoint for creating result
     path("create-result/",CreateResult.as_view(), name="create-result"),
@@ -105,6 +106,8 @@ urlpatterns =[
     path("roll-call/",RollCallAPIView.as_view(), name="roll-call"),
     
     path("rollcall-detail/<int:pk>/",ClassroomDetailAPIView.as_view(), name="roll-call"),
+    
+     path("ca-roll-call/",AssessmentSheetRollCallAPIView.as_view(), name="ca-roll-call"),
     
 
 ]
