@@ -29,7 +29,7 @@ def mul(x, y):
 def migrate_academic_session(data):
   
     data_frame = pd.read_json(data)
- 
+
     with transaction.atomic():
         try:
             for row in data_frame.itertuples():
@@ -40,6 +40,31 @@ def migrate_academic_session(data):
                 
                 Session.objects.create(
                     name = row.session,
+                    code = row.code
+                )
+                    
+        except ValueError as e:
+            raise ValueError(f"Invalid value: {e}")
+        except TypeError as e:
+            raise TypeError(f"Type error: {e}")
+        
+
+# @app.task
+@shared_task
+def migrate_school_class(data):
+  
+    data_frame = pd.read_json(data)
+ 
+    with transaction.atomic():
+        try:
+            for row in data_frame.itertuples():
+
+                # _date_stamp=row.entry_date
+                # _date_timestamp_ms = int(_date_stamp) / 1000
+                # _date = datetime.datetime.utcfromtimestamp(_date_timestamp_ms)
+                
+                SchoolClass.objects.create(
+                    class_name = row.class_name,
                     code = row.code
                 )
                     
