@@ -1089,28 +1089,28 @@ class ClassroomDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 # # Migration with Celery
 
-class migrateSessionsCelery(generics.CreateAPIView):
-    serializer_class = SessionSerializer
-    parser_classes = (MultiPartParser, FormParser,)
-    permission_classes = [IsAuthenticated & IsAuthOrReadOnly]
+# class migrateSessionsCelery(generics.CreateAPIView):
+#     serializer_class = SessionSerializer
+#     parser_classes = (MultiPartParser, FormParser,)
+#     permission_classes = [IsAuthenticated & IsAuthOrReadOnly]
     
-    def get_queryset(self):
-        # just return the review object
-        return Session.objects.all()
+#     def get_queryset(self):
+#         # just return the review object
+#         return Session.objects.all()
     
-    def post(self, request, *args, **kwargs):
+#     def post(self, request, *args, **kwargs):
         
-        data = request.FILES['file']
-        reader = pd.read_excel(data)
-        dtframe = reader
+#         data = request.FILES['file']
+#         reader = pd.read_excel(data)
+#         dtframe = reader
         
-        json_data = dtframe.to_json()
-        # data = json.loads(json_data)
+#         json_data = dtframe.to_json()
+#         # data = json.loads(json_data)
 
         
-        with transaction.atomic():
-            migrate_academic_session.delay(json_data)
-        return Response(
-                {'msg':'Session Successfuly Uploaded'},
-                status = status.HTTP_201_CREATED
-                )
+#         with transaction.atomic():
+#             migrate_academic_session.delay(json_data)
+#         return Response(
+#                 {'msg':'Session Successfuly Uploaded'},
+#                 status = status.HTTP_201_CREATED
+#                 )

@@ -108,8 +108,5 @@ urlpatterns =[
     path("rollcall-detail/<int:pk>/",ClassroomDetailAPIView.as_view(), name="roll-call"),
     
      path("ca-roll-call/",AssessmentSheetRollCallAPIView.as_view(), name="ca-roll-call"),
-    
-    # celery migration
-    path("migrate-session/",migrateSessionsCelery.as_view(), name="migrate-session"),
 
 ]
