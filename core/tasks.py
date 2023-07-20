@@ -39,7 +39,6 @@ def migrate_academic_session(data):
                 # _date = datetime.datetime.utcfromtimestamp(_date_timestamp_ms)
                 
                 Session.objects.create(
-                    user=User.objects.get(pk=row.user_id),
                     name = row.session,
                     code = row.code
                 )
