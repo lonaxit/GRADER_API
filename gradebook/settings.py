@@ -206,7 +206,7 @@ REST_FRAMEWORK = {
 # railway
 # CELERY_BROKER_URL='redis://default:BTKBUIj4ZRHdEDrOZGD3@containers-us-west-181.railway.app:5990'
 
-CELERY_BROKER_URL = 'rediss://red-cgspo09jvhtrd2744bcg:FxktDLe9tDuiLaIpaasTVzXCQI8SrWN8@oregon-redis.render.com:6379'
+CELERY_BROKER_URL = 'redis://default:0M7xcLi39YLZGi5uSODW@containers-us-west-143.railway.app:7972'
 CELERY_ACCEPT_CONTENT= ['application/json']
 CELERY_RESULT_SERIALIZER='json'
 CELERY_TASK_SERIALIZER ='json'
