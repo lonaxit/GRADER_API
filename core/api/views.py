@@ -1107,7 +1107,6 @@ class migrateSessionsCelery(generics.CreateAPIView):
         json_data = dtframe.to_json()
         # data = json.loads(json_data)
 
-        
         with transaction.atomic():
             migrate_academic_session.delay(json_data)
         return Response(
