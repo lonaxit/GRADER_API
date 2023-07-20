@@ -39,7 +39,10 @@ SECRET_KEY = env('SECRET_KEY')
 # for production
 DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = ['']
+# production
+ALLOWED_HOSTS = ['graderapi-production.up.railway.app']
+# dev
+# ALLOWED_HOSTS = ['*']
 
 
 # Application definition
