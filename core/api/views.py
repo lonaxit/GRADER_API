@@ -626,8 +626,8 @@ class ImportAssessment(generics.CreateAPIView):
               
             try:
                  if 'file' not in request.FILES:
-                     print(1)
-                     raise ValidationError({"msg":"no file chose"})
+                    
+                     raise ValidationError({"msg":"no file chosen"})
                  else:
                     data = request.FILES['file']
                    
