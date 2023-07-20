@@ -9,6 +9,7 @@ cryptography==39.0.1
 defusedxml==0.7.1
 Django==4.1.6
 django-cors-headers==3.13.0
+django-environ==0.10.0
 django-templated-mail==1.1.1
 djangorestframework==3.14.0
 djangorestframework-simplejwt==4.8.0
@@ -16,6 +17,7 @@ djoser==2.1.0
 drf-excel==2.4.0
 drf-renderer-xlsx==1.0.0
 et-xmlfile==1.1.0
+gunicorn==21.2.0
 idna==3.4
 itypes==1.2.0
 Jinja2==3.1.2
@@ -23,6 +25,7 @@ MarkupSafe==2.1.2
 numpy==1.24.2
 oauthlib==3.2.2
 openpyxl==3.1.0
+packaging==23.1
 pandas==1.5.3
 Pillow==9.4.0
 psycopg2==2.9.5

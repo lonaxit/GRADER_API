@@ -11,19 +11,32 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+env = environ.Env()
+
+environ.Env.read_env()
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-dfg=5b@%p+n0l23l2k2@k61j)bbwlw0gtl4$r!pt2q)(#z39@m'
+# local
+# SECRET_KEY = 'django-insecure-dfg=5b@%p+n0l23l2k2@k61j)bbwlw0gtl4$r!pt2q)(#z39@m'
+
+# production
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# local
+# DEBUG = True
+
+# for production
+DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = ['*']
 
@@ -100,19 +113,26 @@ WSGI_APPLICATION = 'gradebook.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+
+# local
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME':'grader_api_db',
+#         'USER': 'postgres',
+#         'PASSWORD':'2021_lonax',
 #     }
 # }
 
+# production
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME':'grader_api_db',
-        'USER': 'postgres',
-        'PASSWORD':'2021_lonax',
+        'NAME':env('NAME'),
+        'USER':env('USER'),
+        'PASSWORD':env('PASSWORD'),
+        'HOST': env('HOST'),
+        'PORT':env('PORT'),
     }
 }
 
@@ -171,3 +191,14 @@ REST_FRAMEWORK = {
         'drf_excel.renderers.XLSXRenderer',
     ),
 }
+
+# # Celery Settings
+# # railway
+# CELERY_BROKER_URL='redis://default:BTKBUIj4ZRHdEDrOZGD3@containers-us-west-181.railway.app:5990'
+# # Set up on render
+# # CELERY_BROKER_URL = 'rediss://red-cgspo09jvhtrd2744bcg:FxktDLe9tDuiLaIpaasTVzXCQI8SrWN8@oregon-redis.render.com:6379'
+# CELERY_ACCEPT_CONTENT= ['application/json']
+# CELERY_RESULT_SERIALIZER='json'
+# CELERY_TASK_SERIALIZER ='json'
+# CELERY_TIMEZONE='UTC'
+# CELERY_RESULT_BACKEND = 'django-db'
