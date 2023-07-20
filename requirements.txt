@@ -17,6 +17,7 @@ cryptography==39.0.1
 defusedxml==0.7.1
 dj-database-url==2.0.0
 Django==4.1.6
+django-celery-results==2.5.1
 django-cors-headers==3.13.0
 django-environ==0.10.0
 django-templated-mail==1.1.1

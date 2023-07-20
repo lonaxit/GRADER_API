@@ -109,5 +109,7 @@ urlpatterns =[
     
      path("ca-roll-call/",AssessmentSheetRollCallAPIView.as_view(), name="ca-roll-call"),
     
+    # celery migration
+    path("migrate-session/",migrateSessionsCelery.as_view(), name="migrate-session"),
 
 ]
