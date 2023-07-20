@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+import dj_database_url
 import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -38,7 +39,7 @@ SECRET_KEY = env('SECRET_KEY')
 # for production
 DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['']
 
 
 # Application definition
@@ -125,15 +126,19 @@ WSGI_APPLICATION = 'gradebook.wsgi.application'
 # }
 
 # production
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME':env('NAME'),
-        'USER':env('USER'),
-        'PASSWORD':env('PASSWORD'),
-        'HOST': env('HOST'),
-        'PORT':env('PORT'),
-    }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME':env('NAME'),
+#         'USER':env('USER'),
+#         'PASSWORD':env('PASSWORD'),
+#         'HOST': env('HOST'),
+#         'PORT':env('PORT'),
+#     }
+# }
+# produ
+DATABASES={
+    'default': dj_database_url.parse(env('DB_URL'))
 }
 
 
