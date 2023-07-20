@@ -62,7 +62,7 @@ def migrate_school_class(data):
                 # _date = datetime.datetime.utcfromtimestamp(_date_timestamp_ms)
                 
                 SchoolClass.objects.create(
-                    class_name = row.session,
+                    class_name = row.class_name,
                     code = row.code
                 )
                     
