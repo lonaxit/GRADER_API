@@ -126,12 +126,12 @@ def migrate_users_task(data):
             for row in data_frame.itertuples():
                 
                 userObj = User.objects.create(
-                        username = int(data_frame.student_username),
+                        username = data_frame.student_username,
                         first_name = data_frame.first_name,
                         sur_name =  data_frame.sur_name,
                         other_name =  data_frame.other_name,
                         gender = data_frame.sex,
-                        phone = int(data_frame.user_id),
+                        phone = data_frame.user_id,
                         dob = data_frame.dob,
                         is_staff = False,
                         is_student = True,
