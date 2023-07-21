@@ -88,6 +88,9 @@ def migrate_subjectsperclass(data):
 def migrate_subjects(data):
     pass
  
+@shared_task
+def migrate_subject_teachers(data):
+    pass
     
     
 # @shared_task

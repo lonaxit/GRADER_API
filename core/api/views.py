@@ -38,7 +38,7 @@ from rest_framework.renderers import JSONRenderer
 from drf_excel.mixins import XLSXFileMixin
 from drf_excel.renderers import XLSXRenderer
 
-from core.tasks import migrate_academic_session,migrate_school_class,migrate_subjects,migrate_subjectsperclass,migrate_users_task
+from core.tasks import migrate_academic_session,migrate_school_class,migrate_subjects,migrate_subjectsperclass,migrate_users_task,migrate_subject_teachers
 
 User = get_user_model()
 
@@ -1215,5 +1215,33 @@ class migrateUserCelery(generics.CreateAPIView):
             migrate_users_task.delay(json_data)
         return Response(
                 {'msg':'users Successfuly Uploaded'},
+                status = status.HTTP_201_CREATED
+                )
+        
+        
+# subject teachers
+
+class migrateSubjectTeachersCelery(generics.CreateAPIView):
+    serializer_class = UserSerializer
+    parser_classes = (MultiPartParser, FormParser,)
+    permission_classes = [IsAuthenticated & IsAuthOrReadOnly]
+    
+    def get_queryset(self):
+        # just return the review object
+        return User.objects.all()
+    
+    def post(self, request, *args, **kwargs):
+        
+        data = request.FILES['file']
+        reader = pd.read_excel(data)
+        dtframe = reader
+        
+        json_data = dtframe.to_json()
+        # data = json.loads(json_data)
+
+        with transaction.atomic():
+            migrate_subject_teachers.delay(json_data)
+        return Response(
+                {'msg':'subject teachers Successfuly Uploaded'},
                 status = status.HTTP_201_CREATED
                 )
