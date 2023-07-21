@@ -136,10 +136,10 @@ def migrate_users_task(data):
                         gender = row.sex,
                         phone = row.user_id,
                         dob = _date,
-                        is_staff = False,
-                        is_student = True,
+                        is_staff = True,
+                        is_student = False,
                                     )
-                userObj.set_password(str(row.reg_no))
+                userObj.set_password(str(row.student_username))
                 userObj.save()
                     
         except ValueError as e:
