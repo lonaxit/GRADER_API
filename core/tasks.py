@@ -71,7 +71,80 @@ def migrate_school_class(data):
         except TypeError as e:
             raise TypeError(f"Type error: {e}")  
 
-    
+
+
+# 
+@shared_task
+def migrate_subjectsperclass(data):
+  
+    data_frame = pd.read_json(data)
+ 
+    with transaction.atomic():
+        try:
+            for row in data_frame.itertuples():
+
+                SubjectPerClass.objects.create(
+                    sch_class = SchoolClass.objects.get(pk=row.class_id),
+                    term = Term.objects.get(pk=row.term),
+                    session = Session.objects.get(pk=row.session),
+                    no_subject = row.no_subject
+                )
+                    
+        except ValueError as e:
+            raise ValueError(f"Invalid value: {e}")
+        except TypeError as e:
+            raise TypeError(f"Type error: {e}")  
+        
+
+@shared_task
+def migrate_subjects(data):
+  
+    data_frame = pd.read_json(data)
+ 
+    with transaction.atomic():
+        try:
+            for row in data_frame.itertuples():
+                
+                SchoolClass.objects.create(
+                    class_name = row.name,
+                    code = row.subject_code
+                )
+                    
+        except ValueError as e:
+            raise ValueError(f"Invalid value: {e}")
+        except TypeError as e:
+            raise TypeError(f"Type error: {e}")  
+
+
+@shared_task
+def migrate_users_task(data):
+  
+    data_frame = pd.read_json(data)
+ 
+    with transaction.atomic():
+        try:
+            for row in data_frame.itertuples():
+                
+                userObj = User.objects.create(
+                        username = int(data_frame.student_username),
+                        first_name = data_frame.first_name,
+                        sur_name =  data_frame.sur_name,
+                        other_name =  data_frame.other_name,
+                        gender = data_frame.sex,
+                        phone = int(data_frame.user_id),
+                        dob = data_frame.dob,
+                        is_staff = False,
+                        is_student = True,
+                                    )
+                userObj.set_password(str(data_frame.reg_no))
+                userObj.save()
+                    
+        except ValueError as e:
+            raise ValueError(f"Invalid value: {e}")
+        except TypeError as e:
+            raise TypeError(f"Type error: {e}") 
+
+
 # @shared_task
 # def createLoanDeductions(userid):
 #     # get all active master deduction records
