@@ -159,12 +159,17 @@ def migrate_subject_teachers(data):
                 # _date_stamp=row.dob
                 # _date_timestamp_ms = int(_date_stamp) / 1000
                 # _date = datetime.datetime.utcfromtimestamp(_date_timestamp_ms)
+                # sub = row.subject_id
+                # classid = row.classroom_id
+                # sess = row.session_id
+                # teacherid= row.NEW_USER_ID
                 
-                  SubjectTeacher.objects.create(
-                    subject = Subject.objects.get(row.subject_id),
-                    classroom = SchoolClass.objects.get(row.classroom_id),
-                    session = Session.objects.get(row.session_id),
-                    teacher =User.objects.get(row.NEW_USER_ID),
+                
+                SubjectTeacher.objects.create(
+                    subject = Subject.objects.get(pk=row.subject_id),
+                    classroom = SchoolClass.objects.get(pk=row.classroom_id),
+                    session = Session.objects.get(pk=row.session_id),
+                    teacher =User.objects.get(pk=row.NEW_USER_ID),
                 )
                     
         except ValueError as e:
