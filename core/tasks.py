@@ -129,17 +129,17 @@ def migrate_users_task(data):
                 _date = datetime.datetime.utcfromtimestamp(_date_timestamp_ms)
                 
                 userObj = User.objects.create(
-                        username = data_frame.student_username,
-                        first_name = data_frame.first_name,
-                        sur_name =  data_frame.sur_name,
-                        other_name =  data_frame.other_name,
-                        gender = data_frame.sex,
-                        phone = data_frame.user_id,
+                        username = row.student_username,
+                        first_name = row.first_name,
+                        sur_name =  row.sur_name,
+                        other_name =  row.other_name,
+                        gender = row.sex,
+                        phone = row.user_id,
                         dob = _date,
                         is_staff = False,
                         is_student = True,
                                     )
-                userObj.set_password(str(data_frame.reg_no))
+                userObj.set_password(str(row.reg_no))
                 userObj.save()
                     
         except ValueError as e:
