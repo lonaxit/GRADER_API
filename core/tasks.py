@@ -105,9 +105,9 @@ def migrate_subjects(data):
         try:
             for row in data_frame.itertuples():
                 
-                SchoolClass.objects.create(
-                    class_name = row.name,
-                    code = row.subject_code
+                Subject.objects.create(
+                    name = row.name,
+                    subject_code = row.subject_code
                 )
                     
         except ValueError as e:
