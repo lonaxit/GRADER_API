@@ -124,11 +124,9 @@ def migrate_users_task(data):
     with transaction.atomic():
         try:
             for row in data_frame.itertuples():
-                import datetime
-                date_obj = datetime.date.fromisoformat(row.dob)
-                # _date_stamp=row.dob
-                # _date_timestamp_ms = int(_date_stamp) / 1000
-                # _date = datetime.datetime.utcfromtimestamp(_date_timestamp_ms)
+                _date_stamp=row.dob
+                _date_timestamp_ms = int(_date_stamp) / 1000
+                _date = datetime.datetime.utcfromtimestamp(_date_timestamp_ms)
                 
                 userObj = User.objects.create(
                         username = data_frame.student_username,
@@ -137,7 +135,7 @@ def migrate_users_task(data):
                         other_name =  data_frame.other_name,
                         gender = data_frame.sex,
                         phone = data_frame.user_id,
-                        dob = date_obj,
+                        dob = _date,
                         is_staff = False,
                         is_student = True,
                                     )
