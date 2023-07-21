@@ -1,7 +1,7 @@
 from django.db import models
 
 from django.utils import timezone
-
+from datetime import date
 
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
@@ -70,8 +70,8 @@ class CustomUser(AbstractBaseUser,PermissionsMixin):
     first_name = models.CharField(max_length=255)
     other_name = models.CharField(max_length=255,blank=True,null=True)
     gender = models.CharField(max_length=255)
-    phone = models.CharField(max_length=20,blank=True,null=True)
-    dob = models.DateField(default="2000-01-02")
+    phone = models.CharField(max_length=200,blank=True,null=True)
+    dob = models.DateField()
     avatar = models.ImageField(null=True,blank=True)
     date_joined = models.DateTimeField(default=timezone.now)
     is_active = models.BooleanField(default=True)
