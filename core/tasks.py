@@ -75,12 +75,19 @@ def migrate_school_class(data):
 
     
 @shared_task
-def upload_loan_deduction(data):
-    # data = json.loads(data)
-    # convert the JSON data to a DataFrame
-    data_frame = pd.read_json(data)
-    print(data_frame)
-    print(3 * 7)
+def migrate_user_task(data):
+    pass
+
+
+@shared_task
+def migrate_subjectsperclass(data):
+    pass
+
+
+@shared_task
+def migrate_subjects(data):
+    pass
+ 
     
     
 # @shared_task

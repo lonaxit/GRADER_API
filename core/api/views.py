@@ -38,7 +38,7 @@ from rest_framework.renderers import JSONRenderer
 from drf_excel.mixins import XLSXFileMixin
 from drf_excel.renderers import XLSXRenderer
 
-from core.tasks import migrate_academic_session,migrate_school_class
+from core.tasks import migrate_academic_session,migrate_school_class,migrate_subjects,migrate_subjectsperclass,migrate_user_task
 
 User = get_user_model()
 
@@ -1136,5 +1136,84 @@ class migrateClassCelery(generics.CreateAPIView):
             migrate_school_class.delay(json_data)
         return Response(
                 {'msg':'class Successfuly Uploaded'},
+                status = status.HTTP_201_CREATED
+                )
+        
+        # migrate_subjects
+        
+class migrateSubjectsCelery(generics.CreateAPIView):
+    serializer_class = SubjectSerializer
+    parser_classes = (MultiPartParser, FormParser,)
+    permission_classes = [IsAuthenticated & IsAuthOrReadOnly]
+    
+    def get_queryset(self):
+        # just return the review object
+        return Subject.objects.all()
+    
+    def post(self, request, *args, **kwargs):
+        
+        data = request.FILES['file']
+        reader = pd.read_excel(data)
+        dtframe = reader
+        
+        json_data = dtframe.to_json()
+        # data = json.loads(json_data)
+
+        with transaction.atomic():
+            migrate_subjects.delay(json_data)
+        return Response(
+                {'msg':'subjects Successfuly Uploaded'},
+                status = status.HTTP_201_CREATED
+                )
+        
+# migrate subject per class
+class migrateSubjectPerClasssCelery(generics.CreateAPIView):
+    serializer_class = SubjectPerClassSerializer
+    parser_classes = (MultiPartParser, FormParser,)
+    permission_classes = [IsAuthenticated & IsAuthOrReadOnly]
+    
+    def get_queryset(self):
+        # just return the review object
+        return SubjectPerClass.objects.all()
+    
+    def post(self, request, *args, **kwargs):
+        
+        data = request.FILES['file']
+        reader = pd.read_excel(data)
+        dtframe = reader
+        
+        json_data = dtframe.to_json()
+        # data = json.loads(json_data)
+
+        with transaction.atomic():
+            migrate_subjectsperclass.delay(json_data)
+        return Response(
+                {'msg':'subjects per class Successfuly Uploaded'},
+                status = status.HTTP_201_CREATED
+                )
+        
+# migrate students users
+class migrateUserCelery(generics.CreateAPIView):
+    serializer_class = UserSerializer
+    parser_classes = (MultiPartParser, FormParser,)
+    permission_classes = [IsAuthenticated & IsAuthOrReadOnly]
+    
+    def get_queryset(self):
+        # just return the review object
+        return User.objects.all()
+    
+    def post(self, request, *args, **kwargs):
+        
+        data = request.FILES['file']
+        reader = pd.read_excel(data)
+        dtframe = reader
+        
+        json_data = dtframe.to_json()
+        # data = json.loads(json_data)
+
+        with transaction.atomic():
+            migrate_user_task.delay(json_data)
+        return Response(
+                {'msg':'subjects per class Successfuly Uploaded'},
                 status = status.HTTP_201_CREATED
                 )

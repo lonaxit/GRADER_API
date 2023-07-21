@@ -112,5 +112,10 @@ urlpatterns =[
     # celery migration
     path("migrate-session/",migrateSessionsCelery.as_view(), name="migrate-session"),
     path("migrate-class/",migrateClassCelery.as_view(), name="migrate-class"),
+    
+    
+    path("migrate-subjects/",migrateSubjectsCelery.as_view(), name="migrate-subjects"),
+    path("migrate-subjectsperclass/",migrateSubjectPerClasssCelery.as_view(), name="migrate-subjectsperclass"),
+     path("migrate-students/",migrateUserCelery.as_view(), name="migrate-students"),
 
 ]
