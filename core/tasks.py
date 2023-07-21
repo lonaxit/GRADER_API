@@ -75,7 +75,7 @@ def migrate_school_class(data):
 
     
 @shared_task
-def migrate_user_task(data):
+def migrate_users_task(data):
     pass
 
 

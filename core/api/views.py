@@ -1214,6 +1214,6 @@ class migrateUserCelery(generics.CreateAPIView):
         with transaction.atomic():
             migrate_users_task.delay(json_data)
         return Response(
-                {'msg':'subjects per class Successfuly Uploaded'},
+                {'msg':'users Successfuly Uploaded'},
                 status = status.HTTP_201_CREATED
                 )
