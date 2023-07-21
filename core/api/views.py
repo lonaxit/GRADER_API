@@ -38,7 +38,7 @@ from rest_framework.renderers import JSONRenderer
 from drf_excel.mixins import XLSXFileMixin
 from drf_excel.renderers import XLSXRenderer
 
-from core.tasks import migrate_academic_session,migrate_school_class,migrate_subjects,migrate_subjectsperclass,migrate_user_task
+from core.tasks import migrate_academic_session,migrate_school_class,migrate_subjects,migrate_subjectsperclass,migrate_users_task
 
 User = get_user_model()
 
@@ -1212,7 +1212,7 @@ class migrateUserCelery(generics.CreateAPIView):
         # data = json.loads(json_data)
 
         with transaction.atomic():
-            migrate_user_task.delay(json_data)
+            migrate_users_task.delay(json_data)
         return Response(
                 {'msg':'subjects per class Successfuly Uploaded'},
                 status = status.HTTP_201_CREATED
