@@ -104,6 +104,10 @@ def migrate_scores(data):
 @shared_task
 def migrate_result(data):
     pass
+
+@shared_task
+def migrate_enrollment(data):
+    pass
     
 # @shared_task
 # def createLoanDeductions(userid):
