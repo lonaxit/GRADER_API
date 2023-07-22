@@ -225,34 +225,6 @@ def migrate_scores(data):
                 # sess = row.session_id
                 # teacherid= row.NEW_USER_ID
                 
-                subjaverage = None
-                subjectposition = None
-                
-                highest_inclass = None
-                lowest_inclass = None
-                
-                subjectgrade = None
-                subjectrating = None
-                    
-                if not math.isnan(row.subjaverage):
-                        subjaverage = row.subjaverage
-                elif not math.isnan(row.subjectposition):
-                        subjectposition = row.subjectposition
-                if not math.isnan(row.highest_inclass):
-                        highest_inclass = row.highest_inclass
-                elif not math.isnan(row.lowest_inclass):
-                        lowest_inclass = row.lowest_inclass
-                
-                if pd.isnull(row.subjectrating):
-                   subjectrating= row.subjectrating
-                else:
-                    pass
-                if pd.isnull(row.subjectgrade):
-                   subjectgrade= row.subjectgrade
-                else:
-                    pass
-                
-                
                 Scores.objects.create(
                     user =User.objects.get(pk=row.NEW_STD_ID),
                     term = Term.objects.get(pk=row.term_id),
@@ -265,15 +237,15 @@ def migrate_scores(data):
                     secondscore = row.secondscore,
                     thirdscore =row.thirdscore,
                     totalca = row.totalca,
-                    subjaverage = subjaverage,
+                    subjaverage = row.subjaverage,
                     examscore = row.examscore,
-                    subjectposition = subjectposition,
+                    subjectposition = row.subjectposition,
                     subjecttotal = row.subjecttotal,
                    
-                    subjectgrade = subjectgrade,
-                    subjectrating = subjectrating,
-                    highest_inclass = highest_inclass,
-                    lowest_inclass = lowest_inclass,
+                    subjectgrade = row.subjectgrade,
+                    subjectrating = row.subjectrating,
+                    highest_inclass = row.highest_inclass,
+                    lowest_inclass = row.lowest_inclass,
                     
                 )
                     
