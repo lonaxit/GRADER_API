@@ -289,8 +289,28 @@ def migrate_result(data):
             raise TypeError(f"Type error: {e}") 
 
 
-
-
+# enrollment
+@shared_task
+def migrate_enrollment(data):
+  
+    data_frame = pd.read_json(data)
+ 
+    with transaction.atomic():
+        try:
+            for row in data_frame.itertuples():
+               
+                
+                Classroom.objects.create(
+                    student =User.objects.get(pk=row.NEW_USER_ID),
+                    term = Term.objects.get(pk=row.term_id),
+                    session = Session.objects.get(pk=row.session_id),
+                    class_room = SchoolClass.objects.get(pk=row.class_room_id),
+                )
+                    
+        except ValueError as e:
+            raise ValueError(f"Invalid value: {e}")
+        except TypeError as e:
+            raise TypeError(f"Type error: {e}")
 
 
 
