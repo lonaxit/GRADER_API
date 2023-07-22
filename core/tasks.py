@@ -99,6 +99,11 @@ def migrate_class_teachers(data):
 @shared_task
 def migrate_scores(data):
     pass
+
+    
+@shared_task
+def migrate_result(data):
+    pass
     
 # @shared_task
 # def createLoanDeductions(userid):
