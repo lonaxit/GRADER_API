@@ -118,5 +118,7 @@ urlpatterns =[
     path("migrate-subjectsperclass/",migrateSubjectPerClasssCelery.as_view(), name="migrate-subjectsperclass"),
      path("migrate-students/",migrateUserCelery.as_view(), name="migrate-students"),
      path("migrate-subject-teachers/",migrateSubjectTeachersCelery.as_view(), name="migrate-subject-teachers"),
+     
+      path("migrate-class-teachers/",migrateClassTeachersCelery.as_view(), name="migrate-class-teachers"),
 
 ]

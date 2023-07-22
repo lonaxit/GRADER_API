@@ -38,7 +38,7 @@ from rest_framework.renderers import JSONRenderer
 from drf_excel.mixins import XLSXFileMixin
 from drf_excel.renderers import XLSXRenderer
 
-from core.tasks import migrate_academic_session,migrate_school_class,migrate_subjects,migrate_subjectsperclass,migrate_users_task,migrate_subject_teachers
+from core.tasks import migrate_academic_session,migrate_school_class,migrate_subjects,migrate_subjectsperclass,migrate_users_task,migrate_subject_teachers,migrate_class_teachers
 
 User = get_user_model()
 
@@ -1222,13 +1222,13 @@ class migrateUserCelery(generics.CreateAPIView):
 # subject teachers
 
 class migrateSubjectTeachersCelery(generics.CreateAPIView):
-    serializer_class = UserSerializer
+    serializer_class = SubjectTeacherSerializer
     parser_classes = (MultiPartParser, FormParser,)
     permission_classes = [IsAuthenticated & IsAuthOrReadOnly]
     
     def get_queryset(self):
         # just return the review object
-        return User.objects.all()
+        return SubjectTeacher.objects.all()
     
     def post(self, request, *args, **kwargs):
         
@@ -1243,5 +1243,31 @@ class migrateSubjectTeachersCelery(generics.CreateAPIView):
             migrate_subject_teachers.delay(json_data)
         return Response(
                 {'msg':'subject teachers Successfuly Uploaded'},
+                status = status.HTTP_201_CREATED
+                )
+        
+# class teachers 
+class migrateClassTeachersCelery(generics.CreateAPIView):
+    serializer_class = ClassTeacherSerializer
+    parser_classes = (MultiPartParser, FormParser,)
+    permission_classes = [IsAuthenticated & IsAuthOrReadOnly]
+    
+    def get_queryset(self):
+        # just return the review object
+        return ClassTeacher.objects.all()
+    
+    def post(self, request, *args, **kwargs):
+        
+        data = request.FILES['file']
+        reader = pd.read_excel(data)
+        dtframe = reader
+        
+        json_data = dtframe.to_json()
+        # data = json.loads(json_data)
+
+        with transaction.atomic():
+            migrate_class_teachers.delay(json_data)
+        return Response(
+                {'msg':'class teachers Successfuly Uploaded'},
                 status = status.HTTP_201_CREATED
                 )
