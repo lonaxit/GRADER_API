@@ -177,6 +177,35 @@ def migrate_subject_teachers(data):
         except TypeError as e:
             raise TypeError(f"Type error: {e}") 
 
+# class teacher
+@shared_task
+def migrate_class_teachers(data):
+  
+    data_frame = pd.read_json(data)
+ 
+    with transaction.atomic():
+        try:
+            for row in data_frame.itertuples():
+                # _date_stamp=row.dob
+                # _date_timestamp_ms = int(_date_stamp) / 1000
+                # _date = datetime.datetime.utcfromtimestamp(_date_timestamp_ms)
+                # sub = row.subject_id
+                # classid = row.classroom_id
+                # sess = row.session_id
+                # teacherid= row.NEW_USER_ID
+                
+                
+                ClassTeacher.objects.create(
+                    term = Term.objects.get(pk=row.term_id),
+                    classroom = SchoolClass.objects.get(pk=row.classroom_id),
+                    session = Session.objects.get(pk=row.session_id),
+                    tutor =User.objects.get(pk=row.NEW_ID),
+                )
+                    
+        except ValueError as e:
+            raise ValueError(f"Invalid value: {e}")
+        except TypeError as e:
+            raise TypeError(f"Type error: {e}") 
 
 # @shared_task
 # def createLoanDeductions(userid):
