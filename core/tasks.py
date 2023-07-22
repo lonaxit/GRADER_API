@@ -231,7 +231,7 @@ def migrate_scores(data):
                     term = Term.objects.get(pk=row.term_id),
                     session = Session.objects.get(pk=row.session_id),
                     studentclass = SchoolClass.objects.get(pk=row.studentclass_id),
-                    subject = Session.objects.get(pk=row.subject_id),
+                    subject = Subject.objects.get(pk=row.subject_id),
                     subjectteacher = SubjectTeacher.objects.get(pk=row.NEW_TEACHER_ID),
                     
                     firstscore =row.firstscore,
