@@ -38,7 +38,7 @@ from rest_framework.renderers import JSONRenderer
 from drf_excel.mixins import XLSXFileMixin
 from drf_excel.renderers import XLSXRenderer
 
-from core.tasks import migrate_academic_session,migrate_school_class,migrate_subjects,migrate_subjectsperclass,migrate_users_task,migrate_subject_teachers,migrate_class_teachers
+from core.tasks import migrate_academic_session,migrate_school_class,migrate_subjects,migrate_subjectsperclass,migrate_users_task,migrate_subject_teachers,migrate_class_teachers,migrate_scores
 
 User = get_user_model()
 
@@ -1269,5 +1269,32 @@ class migrateClassTeachersCelery(generics.CreateAPIView):
             migrate_class_teachers.delay(json_data)
         return Response(
                 {'msg':'class teachers Successfuly Uploaded'},
+                status = status.HTTP_201_CREATED
+                )
+        
+
+# scores
+class migrateScoresCelery(generics.CreateAPIView):
+    serializer_class = ScoresSerializer
+    parser_classes = (MultiPartParser, FormParser,)
+    permission_classes = [IsAuthenticated & IsAuthOrReadOnly]
+    
+    def get_queryset(self):
+        # just return the review object
+        return Scores.objects.all()
+    
+    def post(self, request, *args, **kwargs):
+        
+        data = request.FILES['file']
+        reader = pd.read_excel(data)
+        dtframe = reader
+        
+        json_data = dtframe.to_json()
+        # data = json.loads(json_data)
+
+        with transaction.atomic():
+            migrate_scores.delay(json_data)
+        return Response(
+                {'msg':'Scores Successfuly Uploaded'},
                 status = status.HTTP_201_CREATED
                 )

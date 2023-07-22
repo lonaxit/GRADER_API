@@ -96,6 +96,9 @@ def migrate_subject_teachers(data):
 def migrate_class_teachers(data):
     pass
     
+@shared_task
+def migrate_scores(data):
+    pass
     
 # @shared_task
 # def createLoanDeductions(userid):
