@@ -237,15 +237,15 @@ def migrate_scores(data):
                     secondscore = row.secondscore,
                     thirdscore =row.thirdscore,
                     totalca = row.totalca,
-                    subjaverage = row.subjaverage,
+                    subjaverage = pd.to_numeric(row.subjaverage, errors='coerce'),
                     examscore = row.examscore,
-                    subjectposition = row.subjectposition,
+                    subjectposition = pd.to_numeric(row.subjectposition, errors='coerce'),
                     subjecttotal = row.subjecttotal,
                    
                     subjectgrade = row.subjectgrade,
                     subjectrating = row.subjectrating,
-                    highest_inclass = row.highest_inclass,
-                    lowest_inclass = row.lowest_inclass,
+                    highest_inclass = pd.to_numeric(row.highest_inclass, errors='coerce'),
+                    lowest_inclass = pd.to_numeric(row.lowest_inclass, errors='coerce'),
                     
                 )
                     
