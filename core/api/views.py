@@ -1289,8 +1289,8 @@ class migrateScoresCelery(generics.CreateAPIView):
         reader = pd.read_excel(data)
         # value_to_replace = None
         # reader.fillna(None, inplace=True)
-        reader[['subjaverage', 'subjectposition','highest_inclass','lowest_inclass']] = reader[['subjaverage', 'subjectposition','highest_inclass','lowest_inclass']].apply(pd.to_numeric, errors='coerce')
-        # reader = reader.where(pd.notnull(reader), None)
+        # reader[['subjaverage', 'subjectposition','highest_inclass','lowest_inclass']] = reader[['subjaverage', 'subjectposition','highest_inclass','lowest_inclass']].apply(pd.to_numeric, errors='coerce')
+        reader = reader.where(pd.notnull(reader), None)
         dtframe = reader
         
      
