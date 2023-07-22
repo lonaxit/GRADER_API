@@ -235,7 +235,7 @@ def migrate_scores(data):
                     subjectteacher = SubjectTeacher.objects.get(pk=row.NEW_TEACHER_ID),
                     
                     firstscore =row.firstscore,
-                    secondscore = row.seconscore,
+                    secondscore = row.secondscore,
                     thirdscore =row.thirdscore,
                     totalca = row.totalca,
                     subjaverage = row.subjaverage,
