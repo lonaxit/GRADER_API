@@ -1288,7 +1288,7 @@ class migrateScoresCelery(generics.CreateAPIView):
         data = request.FILES['file']
         reader = pd.read_excel(data)
         
-        reader.replace('', pd.NA, inplace=True)
+       
         
         # value_to_replace = None
         # reader.fillna(None, inplace=True)
