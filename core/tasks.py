@@ -256,6 +256,37 @@ def migrate_scores(data):
 
 
 
+@shared_task
+def migrate_result(data):
+  
+    data_frame = pd.read_json(data)
+ 
+    with transaction.atomic():
+        try:
+            for row in data_frame.itertuples():
+               
+                
+                Result.objects.create(
+                    student =User.objects.get(pk=row.NEW_STD_USERID),
+                    term = Term.objects.get(pk=row.term_id),
+                    session = Session.objects.get(pk=row.session_id),
+                    studentclass = SchoolClass.objects.get(pk=row.studentclass_id),
+                  
+                    classteacher = ClassTeacher.objects.get(pk=row.classteacher_id),
+                    
+                    termtotal =row.termtotal,
+                    termaverage = row.termaverage,
+                    termposition =row.termposition,
+                    classteachercomment = row.classteachercomment,
+                    headteachercomment = row.headteachercomment,
+                    attendance = row.attendance,
+                    
+                )
+                    
+        except ValueError as e:
+            raise ValueError(f"Invalid value: {e}")
+        except TypeError as e:
+            raise TypeError(f"Type error: {e}") 
 
 
 
