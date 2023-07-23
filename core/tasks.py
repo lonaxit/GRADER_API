@@ -385,6 +385,35 @@ def migrate_studentpsychomotor(data):
             raise ValueError(f"Invalid value: {e}")
         except TypeError as e:
             raise TypeError(f"Type error: {e}")
+        
+
+
+# upload student profile
+@shared_task
+def migrate_student_profile(data):
+  
+    data_frame = pd.read_json(data)
+ 
+    with transaction.atomic():
+        try:
+            for row in data_frame.itertuples():
+               
+                
+                StudentProfile.objects.create(
+                    user =User.objects.get(pk=row.NEW_USERID),
+                    term = Term.objects.get(pk=row.term_id),
+                    session = Session.objects.get(pk=row.session_id),
+                    studentclass = SchoolClass.objects.get(pk=row.studentclass_id),
+                    psychomotor = Psychomotor.objects.get(pk=row.psychomotor_id),
+                    rating = Rating.objects.get(pk=row.rating_id),
+                )
+                    
+        except ValueError as e:
+            raise ValueError(f"Invalid value: {e}")
+        except TypeError as e:
+            raise TypeError(f"Type error: {e}")
+
+
 
 # @shared_task
 # def createLoanDeductions(userid):
