@@ -126,5 +126,6 @@ urlpatterns =[
       path("migrate-enrollment/",migrateEnrollmentCelery.as_view(), name="migrate-enrollment"),
       path("migrate-enrollment/",migrateEnrollmentCelery.as_view(), name="migrate-enrollment"),
       path("migrate-number/",migrateAdNumberCelery.as_view(), name="migrate-number"),
+      path("migrate-studentaffective/",migrateStudentsAffectiveCelery.as_view(), name="migrate-studentaffective"),
 
 ]
