@@ -120,6 +120,13 @@ def migrate_studentaffective(data):
 @shared_task
 def migrate_studentpsychomotor(data):
     pass
+
+
+
+@shared_task
+def migrate_student_profile(data):
+    pass
+
     
 # @shared_task
 # def createLoanDeductions(userid):

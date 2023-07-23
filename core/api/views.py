@@ -38,7 +38,7 @@ from rest_framework.renderers import JSONRenderer
 from drf_excel.mixins import XLSXFileMixin
 from drf_excel.renderers import XLSXRenderer
 
-from core.tasks import migrate_academic_session,migrate_school_class,migrate_subjects,migrate_subjectsperclass,migrate_users_task,migrate_subject_teachers,migrate_class_teachers,migrate_scores,migrate_result,migrate_enrollment,migrate_admissionnumber,migrate_studentaffective,migrate_studentpsychomotor
+from core.tasks import migrate_academic_session,migrate_school_class,migrate_subjects,migrate_subjectsperclass,migrate_users_task,migrate_subject_teachers,migrate_class_teachers,migrate_scores,migrate_result,migrate_enrollment,migrate_admissionnumber,migrate_studentaffective,migrate_studentpsychomotor,migrate_student_profile
 
 User = get_user_model()
 
@@ -1453,4 +1453,35 @@ class migrateStudentsPyschoCelery(generics.CreateAPIView):
             migrate_studentpsychomotor.delay(json_data)
         return Response(
                 {'msg':'psycho Successfuly Uploaded'},
+                status = status.HTTP_201_CREATED)
+        
+        
+        
+
+# migrate student psychomotor
+class migrateStudentProfileCelery(generics.CreateAPIView):
+    serializer_class = StudentProfileSerializer
+    parser_classes = (MultiPartParser, FormParser,)
+    permission_classes = [IsAuthenticated & IsAuthOrReadOnly]
+    
+    def get_queryset(self):
+        # just return the review object
+        return StudentProfile.objects.all()
+    
+    def post(self, request, *args, **kwargs):
+        
+        data = request.FILES['file']
+        reader = pd.read_excel(data)
+        reader = reader.where(pd.notnull(reader), None)
+        dtframe = reader
+        
+     
+        
+        json_data = dtframe.to_json()
+        # data = json.loads(json_data)
+
+        with transaction.atomic():
+            migrate_student_profile.delay(json_data)
+        return Response(
+                {'msg':'student profile Successfuly Uploaded'},
                 status = status.HTTP_201_CREATED)
