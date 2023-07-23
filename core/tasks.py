@@ -400,12 +400,14 @@ def migrate_student_profile(data):
                
                 
                 StudentProfile.objects.create(
-                    user =User.objects.get(pk=row.NEW_USERID),
-                    term = Term.objects.get(pk=row.term_id),
-                    session = Session.objects.get(pk=row.session_id),
-                    studentclass = SchoolClass.objects.get(pk=row.studentclass_id),
-                    psychomotor = Psychomotor.objects.get(pk=row.psychomotor_id),
-                    rating = Rating.objects.get(pk=row.rating_id),
+                    user =User.objects.get(pk=row.New_UserID),
+                    term_admitted = Term.objects.get(pk=row.term_admitted_id),
+                    session_admitted = Session.objects.get(pk=row.session_admitted_id),
+                    class_admitted = SchoolClass.objects.get(pk=row.class_admitted_id),
+                    local_govt = row.NEW_LGA,
+                    admission_number = row.reg_no,
+                    admission_numberstring = row.full_reg_no,
+                    address = row.ADDRESS,
                 )
                     
         except ValueError as e:
