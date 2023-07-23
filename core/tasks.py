@@ -311,11 +311,11 @@ def migrate_enrollment(data):
             raise ValueError(f"Invalid value: {e}")
         except TypeError as e:
             raise TypeError(f"Type error: {e}")
-
-
-
-# @shared_task
-def migrate_admissionnumner(data):
+        
+        
+# admission number
+@shared_task
+def migrate_admissionnumber(data):
   
     data_frame = pd.read_json(data)
  
