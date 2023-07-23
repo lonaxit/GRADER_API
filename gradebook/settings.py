@@ -131,17 +131,6 @@ WSGI_APPLICATION = 'gradebook.wsgi.application'
 # }
 
 # production
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME':env('NAME'),
-#         'USER':env('USER'),
-#         'PASSWORD':env('PASSWORD'),
-#         'HOST': env('HOST'),
-#         'PORT':env('PORT'),
-#     }
-# }
-# produ
 DATABASES={
     'default': dj_database_url.parse(env('DB_URL'))
 }

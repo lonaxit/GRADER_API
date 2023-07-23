@@ -156,6 +156,35 @@ class StudentsWithNoNumber(APIView):
         serializer = StudentProfileSerializer(queryset, many=True)
         return Response(serializer.data)
     
+    
+class AssignNumberAPIView(generics.RetrieveUpdateAPIView):
+    queryset = StudentProfile.objects.all()
+    serializer_class = StudentProfileSerializer
+ 
+
+    def get(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+    
+
+    def put(self, request, *args, **kwargs):
+        instance = self.get_object()
+        adm_number = AdmissionNumber.objects.filter(status='NO').first()
+        session = Session.objects.get(pk=instance.session_admitted.pk)
+        if adm_number:
+            numberItem = adm_number.serial_no
+            admissionstring ='SKY/ADM/'+session.name+'/'+ str(numberItem)
+            instance.admission_number = numberItem
+            instance.admission_numberstring = admissionstring
+            instance.save()
+            serializer = self.get_serializer(instance)
+            return Response(serializer.data)
+        else:
+            raise ValidationError({"message":"No assigned number available"})
+    
+
+    
 # create student profile using user id
 class StudentProfileCreate(generics.CreateAPIView):
     queryset = StudentProfile.objects.all()

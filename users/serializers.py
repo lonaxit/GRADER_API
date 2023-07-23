@@ -39,7 +39,7 @@ class StudentProfileSerializer(serializers.ModelSerializer): #child model
         classObj = SchoolClass.objects.get(pk=object.class_admitted.pk)
         return classObj.class_name
     
-    def get_student_name(self,objet):
+    def get_student_name(self,object):
         std = User.objects.get(pk=object.user.pk)
         
         return std.sur_name + ' ' + std.first_name

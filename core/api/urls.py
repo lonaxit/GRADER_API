@@ -27,10 +27,13 @@ urlpatterns =[
     
     path("student-profile/<int:pk>/", StudentProfileCreate.as_view(), name="studentprofile"),
     path("student-profile/", StudentProfileListAPIView.as_view(), name="student-profile"),
+    
     path("student-profile-nonumber/", StudentsWithNoNumber.as_view(), name="student-profile-nonumber"),
+
+    path("assign_number/<int:pk>/", AssignNumberAPIView.as_view(), name="assign_number"),
+    
     path("studentprofile-detail/<int:pk>/", StudentProfileDetailAPIView.as_view(), name="studentprofile-detail"),
-    
-    
+
     path("teacher-profile/<int:pk>/", TeacherProfileCreateAPIView.as_view(), name="teacher-profile"),
     
     #  path("teacher-profile/", TeacherProfileCreateAPIView.as_view(), name="teacher-profile"),
