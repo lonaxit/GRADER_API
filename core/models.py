@@ -249,3 +249,13 @@ class Classroom(models.Model):
     date_modified = models.DateTimeField(auto_now=True)
     def __str__(self):
         return self.class_room
+    
+
+# Admission number list
+class AdmissionNumber(models.Model):
+    serial_no = models.IntegerField(null=True)
+    status = models.CharField(max_length=20,default='No')
+    date_created = models.DateTimeField(auto_now_add=True,null=True)
+    date_modified = models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return self.serial_no
