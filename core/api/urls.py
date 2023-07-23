@@ -124,5 +124,7 @@ urlpatterns =[
       path("migrate-scores/",migrateScoresCelery.as_view(), name="migrate-scores"),
       path("migrate-result/",migrateResultCelery.as_view(), name="migrate-result"),
       path("migrate-enrollment/",migrateEnrollmentCelery.as_view(), name="migrate-enrollment"),
+      path("migrate-enrollment/",migrateEnrollmentCelery.as_view(), name="migrate-enrollment"),
+      path("migrate-number/",migrateAdNumberCelery.as_view(), name="migrate-number"),
 
 ]
