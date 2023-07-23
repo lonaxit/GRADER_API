@@ -80,6 +80,7 @@ class StudentProfile(models.Model):
     guardian = models.CharField(max_length=200,null=True,blank=True)
     local_govt = models.CharField(max_length=200,null=True,blank=True)
     admission_number = models.IntegerField(null=True,blank=True)
+    admission_numberstring = models.CharField(max_length=200,null=True,blank=True)
     address = models.CharField(max_length=200,null=True,blank=True)
     session_admitted = models.ForeignKey(Session,on_delete=models.DO_NOTHING)
     term_admitted = models.ForeignKey(Term,on_delete=models.DO_NOTHING)
