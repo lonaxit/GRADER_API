@@ -116,6 +116,10 @@ def migrate_admissionnumber(data):
 @shared_task
 def migrate_studentaffective(data):
     pass
+
+@shared_task
+def migrateStudentsPyschoCelery(data):
+    pass
     
 # @shared_task
 # def createLoanDeductions(userid):
