@@ -324,11 +324,9 @@ def migrate_admissionnumner(data):
             for row in data_frame.itertuples():
                
                 
-                Classroom.objects.create(
-                    student =User.objects.get(pk=row.NEW_USER_ID),
-                    term = Term.objects.get(pk=row.term_id),
-                    session = Session.objects.get(pk=row.session_id),
-                    class_room = SchoolClass.objects.get(pk=row.class_room_id),
+                AdmissionNumber.objects.create(
+                    serial_no =row.serial_no,
+                    status = row.status,
                 )
                     
         except ValueError as e:
