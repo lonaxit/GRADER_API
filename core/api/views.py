@@ -138,6 +138,24 @@ class StudentProfileListAPIView(generics.ListAPIView):
     serializer_class = StudentProfileSerializer
     # permission_classes =[IsAuthenticated & IsAuthOrReadOnly]
     
+# class FilteredRecordListView(generics.ListAPIView):
+#     serializer_class = RecordSerializer
+
+#     def get_queryset(self):
+#         return Record.objects.filter(status__isnull=True)  # Fi
+
+# get scores based on subject, term, session and class
+class StudentsWithNoNumber(APIView):
+    def get(self, request):
+        
+        queryset = StudentProfile.objects.filter(admission_number__isnull=True)
+        if not queryset:
+            raise ValidationError("No records matching your criteria")
+        
+        # Serialize the data and return the response
+        serializer = StudentProfileSerializer(queryset, many=True)
+        return Response(serializer.data)
+    
 # create student profile using user id
 class StudentProfileCreate(generics.CreateAPIView):
     queryset = StudentProfile.objects.all()

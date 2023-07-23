@@ -17,6 +17,9 @@ class StudentProfileSerializer(serializers.ModelSerializer): #child model
     term_name = serializers.SerializerMethodField()
     session_name = serializers.SerializerMethodField()
     class_name = serializers.SerializerMethodField()
+    student_name = serializers.SerializerMethodField()
+    studentid = serializers.SerializerMethodField()
+    
     class Meta:
         model = StudentProfile
         fields = "__all__"
@@ -35,7 +38,14 @@ class StudentProfileSerializer(serializers.ModelSerializer): #child model
                
         classObj = SchoolClass.objects.get(pk=object.class_admitted.pk)
         return classObj.class_name
+    
+    def get_student_name(self,objet):
+        std = User.objects.get(pk=object.user.pk)
         
+        return std.sur_name + ' ' + std.first_name
+    
+    def get_studentid(self,object):
+        return object.user.pk
    
 # user app
 class UserSerializer(serializers.ModelSerializer):

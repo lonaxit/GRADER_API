@@ -27,6 +27,7 @@ urlpatterns =[
     
     path("student-profile/<int:pk>/", StudentProfileCreate.as_view(), name="studentprofile"),
     path("student-profile/", StudentProfileListAPIView.as_view(), name="student-profile"),
+    path("student-profile-nonumber/", StudentsWithNoNumber.as_view(), name="student-profile-nonumber"),
     path("studentprofile-detail/<int:pk>/", StudentProfileDetailAPIView.as_view(), name="studentprofile-detail"),
     
     
