@@ -118,7 +118,7 @@ def migrate_studentaffective(data):
     pass
 
 @shared_task
-def migrateStudentsPyschoCelery(data):
+def migrate_studentpsychomotor(data):
     pass
     
 # @shared_task
