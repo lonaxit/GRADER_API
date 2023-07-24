@@ -69,6 +69,8 @@ urlpatterns =[
     path("export-sheet/",ExportSheet.as_view(),name="export-sheet"),
     path("import-sheet/",ImportAssessment.as_view(),name="import-sheet"),
     
+    path("export-attendance-sheet/",ExportAttendanceSheet.as_view(),name="export-attendance-sheet"),
+    
     # endpoint for creating result
     path("create-result/",CreateResult.as_view(), name="create-result"),
     

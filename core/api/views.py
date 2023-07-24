@@ -646,6 +646,50 @@ class ExportSheet(APIView):
         return response
     
     
+    
+# export attendance sheet
+class ExportAttendanceSheet(APIView):
+    # 1 this works Adopt this one
+    def get(self, request):
+        
+        payload = request.query_params
+        
+        classroom_id = payload.get('classroom')
+        term_id = payload.get('term')
+        session_id = payload.get('session')
+        
+        classObj = SchoolClass.objects.get(pk=classroom_id)    
+        termObj = Term.objects.get(pk=term_id)
+        sessObj = Session.objects.get(pk=session_id)
+        
+        rollcall = Classroom.objects.filter(Q(session=sessObj) & Q(class_room=classObj) & Q(term=termObj)).order_by('student__sur_name')
+
+        # Create an in-memory Excel workbook
+        wb = openpyxl.Workbook()
+        ws = wb.active
+
+        # Write headers to the worksheet
+        headers = ['STDID', 'NAME', 'CLASS','TRM','SESS','ATT']
+        ws.append(headers)
+
+        # Write data to the worksheet
+        for item in rollcall:
+            row = [item.student.id,item.student.sur_name +' '+ item.student.first_name, classObj.class_name, termObj.name,sessObj.name,0]
+            ws.append(row)
+
+        # Create a response object with the appropriate content type and headers
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=your_data.xlsx'
+
+        # Save the workbook to the response
+        wb.save(response)
+
+        return response
+    
+    
+    
+
+
     # 2 works as well 
     # def get(self, request):
         
