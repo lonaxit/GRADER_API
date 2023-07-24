@@ -1069,6 +1069,58 @@ class EnrollStudent(generics.CreateAPIView):
                 status = status.HTTP_201_CREATED
                 )
         
+
+# Mass enrollment
+class MassEnrollStudent(generics.CreateAPIView):
+    serializer_class = ClassroomSerializer
+    # permission_classes = [IsAuthenticated & IsAuthOrReadOnly]
+    
+    def get_queryset(self):
+        # just return the review object
+        return Classroom.objects.all()
+    
+    def post(self, request, *args, **kwargs):
+        
+        
+        with transaction.atomic():
+            
+            try:
+                
+                from_class = request.data.get('fromclassroom')
+                from_term = request.data.get('fromterm')
+                from_session = request.data.get('fromsession')
+                
+                to_class = request.data.get('toclassroom')
+                to_term = request.data.get('toterm')
+                to_session = request.data.get('tosession')
+                
+                # check if student is already enrolled
+                studentEnrolled = Classroom.objects.filter(Q(term=from_term) & Q(session=from_session) & Q (class_room=from_class)).distinct('student')
+                
+                if not studentEnrolled:
+                    raise ValidationError("No records available for your selection")
+                
+                else:
+                    
+                    for row in studentEnrolled:
+                        
+                        enrollObj = Classroom.objects.create(
+                        class_room=SchoolClass.objects.get(pk=to_class),
+                        session = Session.objects.get(pk=to_session),
+                        term = Term.objects.get(pk=to_term),
+                        student = User.objects.get(pk=row.student.pk)
+                    )
+                    enrollObj.save()
+  
+            except Exception as e:
+                raise ValidationError(e)
+           
+        return Response(
+                {'msg':'Enrollment created successfully'},
+                status = status.HTTP_201_CREATED
+                )
+        
+         
 # # List all student in classroom based on term, class, session
 # class RollCall(generics.ListAPIView):
 #     serializer_class = ClassroomSerializer
