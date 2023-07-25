@@ -71,6 +71,8 @@ urlpatterns =[
     
     path("export-attendance-sheet/",ExportAttendanceSheet.as_view(),name="export-attendance-sheet"),
     
+    path("upload-attendance/",ExportAttendanceSheet.as_view(),name="upload-attendance"),
+    
     # endpoint for creating result
     path("create-result/",CreateResult.as_view(), name="create-result"),
     
