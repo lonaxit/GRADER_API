@@ -645,6 +645,19 @@ class ExportSheet(APIView):
 
         return response
     
+     # 2 works as well 
+    # def get(self, request):
+        
+    #     custom_header = ['Product1', 'Price2','Product3', 'Price4','Product5', 'Price6','Product7', 'Price8']
+    #     userObj = Classroom.objects.all()
+    #     serializer = ClassroomSerializer(userObj, many=True)
+    #     df = pd.DataFrame(serializer.data)
+    #     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    #     response['Content-Disposition'] = 'attachment; filename="out.xlsx"'
+    #     df.to_excel(response, na_rep='N/A', header=custom_header, index=False)
+
+    #     return response
+    
     
     
 # export attendance sheet
@@ -662,19 +675,19 @@ class ExportAttendanceSheet(APIView):
         termObj = Term.objects.get(pk=term_id)
         sessObj = Session.objects.get(pk=session_id)
         
-        rollcall = Classroom.objects.filter(Q(session=sessObj) & Q(class_room=classObj) & Q(term=termObj)).order_by('student__sur_name')
+        rollcall = Result.objects.filter(Q(session=sessObj) & Q(studentclass=classObj) & Q(term=termObj)).order_by('student__sur_name')
 
         # Create an in-memory Excel workbook
         wb = openpyxl.Workbook()
         ws = wb.active
 
         # Write headers to the worksheet
-        headers = ['STDID', 'NAME', 'CLASS','TRM','SESS','ATT']
+        headers = ['RSLTID', 'NAME', 'CLASS','TRM','SESS','POS','ATT']
         ws.append(headers)
 
         # Write data to the worksheet
         for item in rollcall:
-            row = [item.student.id,item.student.sur_name +' '+ item.student.first_name, classObj.class_name, termObj.name,sessObj.name,0]
+            row = [item.id,item.student.sur_name +' '+ item.student.first_name, classObj.class_name, termObj.name,sessObj.name,item.termposition,]
             ws.append(row)
 
         # Create a response object with the appropriate content type and headers
@@ -686,23 +699,47 @@ class ExportAttendanceSheet(APIView):
 
         return response
     
+# upload attendance
+class UploadTerminalAttendance(generics.CreateAPIView):
+    serializer_class = ResultSerializer
+    parser_classes = (MultiPartParser, FormParser,)
+    permission_classes = [IsAuthenticated & IsAuthOrReadOnly]
     
+    def get_queryset(self):
+        # just return the review object
+        return Result.objects.all()
     
-
-
-    # 2 works as well 
-    # def get(self, request):
+    def post(self, request, *args, **kwargs):
         
-    #     custom_header = ['Product1', 'Price2','Product3', 'Price4','Product5', 'Price6','Product7', 'Price8']
-    #     userObj = Classroom.objects.all()
-    #     serializer = ClassroomSerializer(userObj, many=True)
-    #     df = pd.DataFrame(serializer.data)
-    #     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    #     response['Content-Disposition'] = 'attachment; filename="out.xlsx"'
-    #     df.to_excel(response, na_rep='N/A', header=custom_header, index=False)
+        with transaction.atomic():
+              
+            try:
+                 if 'file' not in request.FILES:
+                     raise ValidationError({"msg":"no file chosen"})
+                 else:
+                    data = request.FILES['file']
+                   
+                    reader = pd.read_excel(data)
+                    reader = reader.where(pd.notnull(reader), None)
+                    dtframe = reader
+                  
+                
+                    for row in dtframe.itertuples():
+                        resultObj = Result.objects.get(pk=row.RSLTID)
+                        resultObj.attendance = row.ATT
+                        resultObj.save()
+            except Exception as e:
+                
+                raise ValidationError(e)
+           
+        return Response(
+                {'msg':'Attendance created successfully'},
+                status = status.HTTP_201_CREATED
+                )
 
-    #     return response
- 
+
+
+
 
 # upload/import CA EXCEL SHEET
 class ImportAssessment(generics.CreateAPIView):
