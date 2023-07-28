@@ -125,6 +125,27 @@ class ResumptionSettingsCreateAPIView(generics.ListCreateAPIView):
     serializer_class = ResumptionSettingSerializer
     # permission_classes =[IsAuthenticated & IsAuthOrReadOnly]
     
+    
+# get resumption date by sesstion and curren term
+# error for this code is object of type ResumeSetting is not JSON serializable
+# not in use
+# class GetResumptionDate(APIView):
+#     serializer_class = ResumptionSettingSerializer
+#     # permission_classes = [IsAuthenticated & IsAuthOrReadOnly]
+    
+#     def get(self,request):
+        
+#         termid = request.query_params.get('term')
+#         sessionid = request.query_params.get('session')
+      
+#         queryset = ResumptionSetting.objects.filter(current_term=termid,session=sessionid).first()
+        
+#         if not queryset:
+#             raise ValidationError("No records available")
+#         return Response(queryset)
+    
+    
+    
 class ResumptionSettingsClassDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = ResumptionSetting.objects.all()
     serializer_class = ResumptionSettingSerializer
@@ -508,7 +529,31 @@ class ScoresDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ScoresSerializer
     # permission_classes =[IsAuthenticated & IsAuthOrReadOnly]
 
-
+# user scores for term
+class UserScoresList(generics.ListAPIView):
+    serializer_class = ScoresSerializer
+    # permission_classes = [IsAuthenticated & IsAuthOrReadOnly]
+    
+    def get_queryset(self):
+        
+        userid = self.kwargs.get('userid')
+        termid = self.kwargs.get('term')
+        sessionid = self.kwargs.get('session')
+        classid = self.kwargs.get('class')
+        
+        # 
+        user = User.objects.get(pk=userid)
+        term = Term.objects.get(pk=termid)
+        session = Session.objects.get(pk=sessionid)
+        classroom = SchoolClass.objects.get(pk=classid)
+        
+        
+        # Example: Fetching data based on a filter field named 'filter_field'
+        queryset = Scores.objects.filter(user=userid,term=termid,session=sessionid,studentclass=classid)
+        
+        if not queryset:
+            raise ValidationError("No records available")
+        return queryset
 
     
 class CreateResult(generics.CreateAPIView):
@@ -777,9 +822,6 @@ class ImportAssessment(generics.CreateAPIView):
                     
                         # check for subject teacher
                         teacher = self.request.user
-                     
-                       
-        
                         _isteacher = SubjectTeacher.objects.filter(teacher_id=teacher.pk,classroom=int(dtframe.CLASSID),session=activeSession.pk,subject=dtframe.SUBJID)
                         
                         if not _isteacher:
@@ -1175,23 +1217,28 @@ class MassEnrollStudent(generics.CreateAPIView):
                 to_term = request.data.get('toterm')
                 to_session = request.data.get('tosession')
                 
-                # check if student is already enrolled
+                
                 studentEnrolled = Classroom.objects.filter(Q(term=from_term) & Q(session=from_session) & Q (class_room=from_class)).distinct('student')
                 
                 if not studentEnrolled:
                     raise ValidationError("No records available for your selection")
                 
                 else:
+                    # check if student is already enrolled
+                    studentpresent = Classroom.objects.filter(Q(term=to_term) & Q(session=to_session) & Q (class_room=to_class)).distinct('student')
                     
-                    for row in studentEnrolled:
-                        
-                        enrollObj = Classroom.objects.create(
-                        class_room=SchoolClass.objects.get(pk=to_class),
-                        session = Session.objects.get(pk=to_session),
-                        term = Term.objects.get(pk=to_term),
-                        student = User.objects.get(pk=row.student.pk)
-                    )
-                    enrollObj.save()
+                    if not studentpresent:
+                         raise ValidationError("Double entry detected")
+                    else:
+                        for row in studentEnrolled:
+                            
+                            enrollObj = Classroom.objects.create(
+                            class_room=SchoolClass.objects.get(pk=to_class),
+                            session = Session.objects.get(pk=to_session),
+                            term = Term.objects.get(pk=to_term),
+                            student = User.objects.get(pk=row.student.pk)
+                        )
+                        enrollObj.save()
   
             except Exception as e:
                 raise ValidationError(e)
@@ -1201,7 +1248,6 @@ class MassEnrollStudent(generics.CreateAPIView):
                 status = status.HTTP_201_CREATED
                 )
         
-         
 # # List all student in classroom based on term, class, session
 # class RollCall(generics.ListAPIView):
 #     serializer_class = ClassroomSerializer

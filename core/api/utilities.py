@@ -249,7 +249,7 @@ def processPsycho(classroom,session,term):
                 # select three random random skills
                 psycho_skills = Psychomotor.objects.all().order_by("?")[:3]
                 # select rating
-                rating = Rating.objects.get(pk=1)
+                rating = Rating.objects.get(pk=3)
 
             for i in  psycho_skills:
                 
@@ -284,7 +284,7 @@ def processAffective(classroom,session,term):
                 # select three random affective skills
                 affective_skills = Affective.objects.all().order_by("?")[:3]
                 # select rating
-                rating = Rating.objects.get(pk=1)
+                rating = Rating.objects.get(pk=3)
 
             for i in affective_skills:
 

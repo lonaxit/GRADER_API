@@ -23,6 +23,10 @@ urlpatterns =[
     
     
     path("resumption-setting/", ResumptionSettingsCreateAPIView.as_view(), name="resumption-setting"),
+    
+    # not working refactor
+    # path("get-resumption-date/", GetResumptionDate.as_view(), name="get-resumption-date"),
+    
     path("resumptionsetting-detail/<int:pk>/", ResumptionSettingsClassDetailAPIView.as_view(), name="resumptionsetting-detail"),
     
     path("student-profile/<int:pk>/", StudentProfileCreate.as_view(), name="studentprofile"),
@@ -65,6 +69,8 @@ urlpatterns =[
     path("filter-scores/", FindScoresAPIView.as_view(), name="filter-scores"),
     path("scores-detail/<int:pk>/", ScoresDetailAPIView.as_view(), name="scores-detail"),
     
+    # user scores given userid, term, session, class
+    path("user-scores/<int:userid>/<int:term>/<int:session>/<int:class>/",UserScoresList.as_view(),name='user-scores'),
     
     path("export-sheet/",ExportSheet.as_view(),name="export-sheet"),
     path("import-sheet/",ImportAssessment.as_view(),name="import-sheet"),
@@ -86,7 +92,6 @@ urlpatterns =[
     # rating
      path("create-rating/",RatingCreateAPIView.as_view(), name="create-rating"),
      path("rating-detail/<int:pk>/",RatingDetailAPIView.as_view(), name="rating-detail"),
-     
      
     #  psychomotor
     path("create-pyschomotor/", PsychomotorCreateListAPIView.as_view(), name="create-psychomotor"),

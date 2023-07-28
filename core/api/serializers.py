@@ -206,7 +206,7 @@ class ScoresSerializer(serializers.ModelSerializer):
     def get_subject_name(self,object):
                
         _subj = Subject.objects.get(pk=object.subject.pk)
-        return _subj.subject_code
+        return _subj.name
     
 
 class ResultSerializer(serializers.ModelSerializer):
@@ -215,8 +215,8 @@ class ResultSerializer(serializers.ModelSerializer):
     session_name = serializers.SerializerMethodField()
     class_name = serializers.SerializerMethodField()
     term_name = serializers.SerializerMethodField()
-    # subject_name = serializers.SerializerMethodField()
-
+    admission_number = serializers.SerializerMethodField()
+    
     class Meta:
         model = Result
         fields = "__all__"
@@ -246,10 +246,10 @@ class ResultSerializer(serializers.ModelSerializer):
         _class = SchoolClass.objects.get(pk=object.studentclass.pk)
         return _class.code
     
-    # def get_subject_name(self,object):
+    def get_admission_number(self,object):
                
-    #     _subj = Subject.objects.get(pk=object.subject.pk)
-    #     return _subj.subject_code
+         std = StudentProfile.objects.get(user=object.student.pk)
+         return std.admission_numberstring
 
 class RatingSerializer(serializers.ModelSerializer):
     class Meta:
