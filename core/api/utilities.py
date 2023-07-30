@@ -32,6 +32,9 @@ User = get_user_model()
 
 def processTerminalResult(request,classObj,termObj,sessionObj):
     
+    # find class teacher
+    class_teacher = ClassTeacher.objects.get(session=sessionObj.pk,term=termObj.pk,classroom=classObj)
+    
     # find distint students in the scores table
     students = Scores.objects.filter(session=sessionObj,term=termObj,studentclass=classObj).distinct('user')
     
@@ -59,7 +62,7 @@ def processTerminalResult(request,classObj,termObj,sessionObj):
             # create a new record
             resultObj = Result.objects.create(
                                  termtotal = scores['subject_total'],
-                                 classteacher = ClassTeacher.objects.get(tutor=request.user.pk),
+                                 classteacher = ClassTeacher.objects.get(tutor=class_teacher.tutor.pk),
                                  session = sessionObj,
                                  studentclass = classObj,
                                  term = termObj,

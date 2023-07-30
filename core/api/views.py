@@ -748,7 +748,8 @@ class ExportAttendanceSheet(APIView):
 class UploadTerminalAttendance(generics.CreateAPIView):
     serializer_class = ResultSerializer
     parser_classes = (MultiPartParser, FormParser,)
-    permission_classes = [IsAuthenticated & IsAuthOrReadOnly]
+    # permission_classes = [IsAuthenticated & IsAuthOrReadOnly]
+    permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
         # just return the review object
@@ -790,7 +791,8 @@ class UploadTerminalAttendance(generics.CreateAPIView):
 class ImportAssessment(generics.CreateAPIView):
     serializer_class = ScoresSerializer
     parser_classes = (MultiPartParser, FormParser,)
-    permission_classes = [IsAuthenticated & IsAuthOrReadOnly]
+    # permission_classes = [IsAuthenticated & IsAuthOrReadOnly]
+    permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
         # just return the review object
@@ -822,53 +824,58 @@ class ImportAssessment(generics.CreateAPIView):
                     
                         # check for subject teacher
                         teacher = self.request.user
-                        _isteacher = SubjectTeacher.objects.filter(teacher_id=teacher.pk,classroom=int(dtframe.CLASSID),session=activeSession.pk,subject=dtframe.SUBJID)
+                        # _isteacher = SubjectTeacher.objects.filter(teacher_id=teacher.pk,classroom=int(dtframe.CLASSID),session=activeSession.pk,subject=dtframe.SUBJID)
                         
-                        if not _isteacher:
-                            raise ValidationError("You are not a subject teacher for this class")
-                        else:
+                        # for use this term
+                        subjteacher = SubjectTeacher.objects.filter(classroom=int(dtframe.CLASSID),session=activeSession.pk,subject=dtframe.SUBJID).first()
+                        
+                        # if not _isteacher:
+                        #     raise ValidationError("You are not a subject teacher for this class")
+                        # else:
                             # check if studentexist in class
-                            isEnrolled = Classroom.objects.filter(session=activeSession,term=activeTerm,class_room = classObj,student=int(dtframe.STDID)).exists()
-                            if  not isEnrolled:
+                        isEnrolled = Classroom.objects.filter(session=activeSession,term=activeTerm,class_room = classObj,student=int(dtframe.STDID)).exists()
+                        if  not isEnrolled:
+                            pass
+                        else:
+                            
+                                # check for existence of scores
+                            scoresExist = Scores.objects.filter(session=activeSession,term=activeTerm,subject=int(dtframe.SUBJID),studentclass=int(dtframe.CLASSID),user=int(dtframe.STDID)).exists()
+                    
+                            if scoresExist:
+                                
                                 pass
                             else:
-                                # check for existence of scores
-                                scoresExist = Scores.objects.filter(session=activeSession,term=activeTerm,subject=int(dtframe.SUBJID),studentclass=int(dtframe.CLASSID),user=int(dtframe.STDID)).exists()
-                    
-                                if scoresExist:
-                                    pass
-                                else:
                                     
-                                    ca1 = 0
-                                    ca2 = 0
-                                    ca3 = 0
-                                    exam = 0
+                                ca1 = 0
+                                ca2 = 0
+                                ca3 = 0
+                                exam = 0
+                
+                                if not math.isnan(dtframe.CA1):
+                                    ca1 = dtframe.CA1
+                                elif not math.isnan(dtframe.CA2):
+                                    ca2 = dtframe.CA2
+                                elif not math.isnan(dtframe.CA3):
+                                    ca3 = dtframe.CA3
+                                elif not math.isnan(dtframe.EXAM):
+                                    exam = dtframe.EXAM
                     
-                                    if not math.isnan(dtframe.CA1):
-                                        ca1 = dtframe.CA1
-                                    elif not math.isnan(dtframe.CA2):
-                                        ca2 = dtframe.CA2
-                                    elif not math.isnan(dtframe.CA3):
-                                        ca3 = dtframe.CA3
-                                    elif not math.isnan(dtframe.EXAM):
-                                        exam = dtframe.EXAM
-                        
-                                    obj = Scores.objects.create(
-                                            firstscore=ca1,
-                                            secondscore=ca2,
-                                            thirdscore=ca3,
-                                            totalca=ca1 + ca2 + ca3,
-                                            examscore=exam,
-                                            subjecttotal=exam + ca1 + ca2 + ca3,
-                                            session=activeSession,
-                                            term=activeTerm,
-                                            user=studentObj,
-                                            studentclass=classObj,
-                                            subjectteacher= SubjectTeacher.objects.get(teacher=teacher.pk),
-                                            subject=subjectObj,
-                                        )
-                                        
-                                    obj.save()
+                                obj = Scores.objects.create(
+                                        firstscore=ca1,
+                                        secondscore=ca2,
+                                        thirdscore=ca3,
+                                        totalca=ca1 + ca2 + ca3,
+                                        examscore=exam,
+                                        subjecttotal=exam + ca1 + ca2 + ca3,
+                                        session=activeSession,
+                                        term=activeTerm,
+                                        user=studentObj,
+                                        studentclass=classObj,
+                                        subjectteacher= SubjectTeacher.objects.get(teacher=subjteacher.teacher.pk),
+                                        subject=subjectObj,
+                                    )
+                                    
+                                obj.save()
                     
                                     # process scores
                     processScores(subjectObj,classObj,activeTerm,activeSession)
