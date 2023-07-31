@@ -871,7 +871,7 @@ class ImportAssessment(generics.CreateAPIView):
                                         term=activeTerm,
                                         user=studentObj,
                                         studentclass=classObj,
-                                        subjectteacher= SubjectTeacher.objects.get(teacher=subjteacher.teacher.pk),
+                                        subjectteacher= subjteacher,
                                         subject=subjectObj,
                                     )
                                     
