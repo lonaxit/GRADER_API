@@ -829,6 +829,7 @@ class ImportAssessment(generics.CreateAPIView):
                         
                         # for use this term
                         subjteacher = SubjectTeacher.objects.filter(classroom=int(dtframe.CLASSID),session=activeSession.pk,subject=dtframe.SUBJID).first()
+                        print(subjteacher.teacher)
                         
                         # if not _isteacher:
                         #     raise ValidationError("You are not a subject teacher for this class")
