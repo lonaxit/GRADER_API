@@ -845,28 +845,29 @@ class ImportAssessment(generics.CreateAPIView):
                                 
                                 pass
                             else:
+                                
                                     
-                                ca1 = 0
-                                ca2 = 0
-                                ca3 = 0
-                                exam = 0
+                                # ca1 = 0
+                                # ca2 = 0
+                                # ca3 = 0
+                                # exam = 0
                 
-                                if not math.isnan(dtframe.CA1):
-                                    ca1 = dtframe.CA1
-                                elif not math.isnan(dtframe.CA2):
-                                    ca2 = dtframe.CA2
-                                elif not math.isnan(dtframe.CA3):
-                                    ca3 = dtframe.CA3
-                                elif not math.isnan(dtframe.EXAM):
-                                    exam = dtframe.EXAM
+                                # if not math.isnan(dtframe.CA1):
+                                #     ca1 = dtframe.CA1
+                                # elif not math.isnan(dtframe.CA2):
+                                #     ca2 = dtframe.CA2
+                                # elif not math.isnan(dtframe.CA3):
+                                #     ca3 = dtframe.CA3
+                                # elif not math.isnan(dtframe.EXAM):
+                                #     exam = dtframe.EXAM
                     
                                 obj = Scores.objects.create(
-                                        firstscore=ca1,
-                                        secondscore=ca2,
-                                        thirdscore=ca3,
-                                        totalca=ca1 + ca2 + ca3,
-                                        examscore=exam,
-                                        subjecttotal=exam + ca1 + ca2 + ca3,
+                                        firstscore=dtframe.CA1,
+                                        secondscore=dtframe.CA2,
+                                        thirdscore=dtframe.CA3,
+                                        totalca=dtframe.CA1 + dtframe.CA2 + dtframe.CA3,
+                                        examscore=dtframe.EXAM,
+                                        subjecttotal=dtframe.EXAM + dtframe.CA1 + dtframe.CA2 + dtframe.CA3,
                                         session=activeSession,
                                         term=activeTerm,
                                         user=studentObj,
