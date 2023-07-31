@@ -824,6 +824,7 @@ class ImportAssessment(generics.CreateAPIView):
                     
                         # check for subject teacher
                         teacher = self.request.user
+                        print(teacher.pk)
                         _isteacher = SubjectTeacher.objects.filter(teacher=teacher.pk,classroom=int(dtframe.CLASSID),session=activeSession.pk,subject=dtframe.SUBJID)
                         
                         # for use this term
