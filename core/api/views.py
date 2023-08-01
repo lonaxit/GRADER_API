@@ -815,9 +815,9 @@ class ImportAssessment(generics.CreateAPIView):
                   
                 
                     for dtframe in dtframe.itertuples():
-                        studentObj=User.objects.get(pk=int(dtframe.STDID))
-                        classObj = SchoolClass.objects.get(pk=int(dtframe.CLASSID)) 
-                        subjectObj = Subject.objects.get(pk=int(dtframe.SUBJID))   
+                        studentObj=User.objects.get(pk=dtframe.STDID)
+                        classObj = SchoolClass.objects.get(pk=dtframe.CLASSID) 
+                        subjectObj = Subject.objects.get(pk=dtframe.SUBJID)   
                         activeTerm = Term.objects.get(status='True')
                         activeSession = Session.objects.get(status='True')
                      
@@ -828,19 +828,19 @@ class ImportAssessment(generics.CreateAPIView):
                         # _isteacher = SubjectTeacher.objects.filter(teacher=teacher.pk,classroom=int(dtframe.CLASSID),session=activeSession.pk,subject=dtframe.SUBJID)
                         
                         # for use this term
-                        subjteacher = SubjectTeacher.objects.filter(classroom=int(dtframe.CLASSID),session=activeSession.pk,subject=dtframe.SUBJID).first()
+                        subjteacher = SubjectTeacher.objects.filter(classroom=dtframe.CLASSID,session=activeSession.pk,subject=dtframe.SUBJID).first()
                         
                         # if not _isteacher:
                         #     raise ValidationError("You are not a subject teacher for this class")
                         # else:
                             # check if studentexist in class
-                        isEnrolled = Classroom.objects.filter(session=activeSession,term=activeTerm,class_room = classObj,student=int(dtframe.STDID)).exists()
+                        isEnrolled = Classroom.objects.filter(session=activeSession,term=activeTerm,class_room = classObj,student=dtframe.STDID).exists()
                         if  not isEnrolled:
                             pass
                         else:
                             
                             # check for existence of scores
-                            scoresExist = Scores.objects.filter(session=activeSession,term=activeTerm,subject=int(dtframe.SUBJID),studentclass=int(dtframe.CLASSID),user=int(dtframe.STDID)).exists()
+                            scoresExist = Scores.objects.filter(session=activeSession,term=activeTerm,subject=dtframe.SUBJID,studentclass=dtframe.CLASSID,user=dtframe.STDID).exists()
                     
                             if scoresExist:
                                 
@@ -873,7 +873,7 @@ class ImportAssessment(generics.CreateAPIView):
                                         term=activeTerm,
                                         user=studentObj,
                                         studentclass=classObj,
-                                        subjectteacher= SubjectTeacher.objects.get(teacher=subjteacher.teacher.pk,classroom=int(dtframe.CLASSID),session=activeSession.pk,subject=dtframe.SUBJID),
+                                        subjectteacher= SubjectTeacher.objects.get(teacher=subjteacher.teacher.pk,classroom=dtframe.CLASSID,session=activeSession.pk,subject=dtframe.SUBJID),
                                         subject=subjectObj,
                                     )
                                     
