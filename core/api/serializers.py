@@ -228,7 +228,7 @@ class ResultSerializer(serializers.ModelSerializer):
     
     def get_classteacher_name(self,object):
                
-        teacherObj = User.objects.get(pk=object.classteacher.tutor)
+        teacherObj = User.objects.get(pk=object.classteacher.tutor.pk)
         return teacherObj.sur_name
     
     def get_session_name(self,object):
