@@ -487,9 +487,9 @@ class ScoresCreateAPIView(generics.CreateAPIView):
         
         teacher = self.request.user
         
-        _isteacher = SubjectTeacher.objects.filter(teacher_id=teacher.pk,classroom=studentclass.pk,session=session.pk,subject=subject.pk)
-        if not _isteacher:
-            raise ValidationError("You are not a subject teacher for this class")
+        # _isteacher = SubjectTeacher.objects.filter(teacher_id=teacher.pk,classroom=studentclass.pk,session=session.pk,subject=subject.pk)
+        # if not _isteacher:
+        #     raise ValidationError("You are not a subject teacher for this class")
             
         
         # logic to prevent multple creation of record
