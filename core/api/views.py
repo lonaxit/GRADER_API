@@ -499,7 +499,7 @@ class ScoresCreateAPIView(generics.CreateAPIView):
             
             raise ValidationError("Record already exist")
         
-        serializer.save(user=user,subjectteacher=SubjectTeacher.objects.get(teacher=teacher),firstscore=firstscore,secondscore=secondscore,thirdscore=thirdscore,totalca=totalca,subjecttotal=subjecttotal)
+        serializer.save(user=user,subjectteacher=SubjectTeacher.objects.filter(teacher=teacher).first(),firstscore=firstscore,secondscore=secondscore,thirdscore=thirdscore,totalca=totalca,subjecttotal=subjecttotal)
         processScores(subject,studentclass,term,session)
         
         
