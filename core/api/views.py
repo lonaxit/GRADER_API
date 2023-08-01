@@ -581,9 +581,9 @@ class CreateResult(generics.CreateAPIView):
                 
                 loggedInUser = request.user
                 
-                # _isteacher = ClassTeacher.objects.filter(tutor=loggedInUser,classroom=classObj,session=sessionObj,term=termObj)
-                # if not _isteacher:
-                #     raise ValidationError("You are not a class teacher for this class")
+                _isteacher = ClassTeacher.objects.filter(tutor=loggedInUser,classroom=classObj)
+                if not _isteacher:
+                    raise ValidationError("You are not a class teacher for this class")
                 
                 
                 # process terminal result
