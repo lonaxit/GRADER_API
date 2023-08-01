@@ -810,8 +810,8 @@ class ImportAssessment(generics.CreateAPIView):
                     data = request.FILES['file']
                    
                     reader = pd.read_excel(data)
-                    reader = reader.where(pd.notnull(reader), None)
-                    dtframe = reader
+                    # reader = reader.where(pd.notnull(reader), None)
+                    dtframe = reader.fillna(0)
                   
                 
                     for dtframe in dtframe.itertuples():
@@ -840,7 +840,7 @@ class ImportAssessment(generics.CreateAPIView):
                         else:
                             
                             # check for existence of scores
-                            scoresExist = Scores.objects.filter(session=activeSession,term=activeTerm,subject=dtframe.SUBJID,studentclass=dtframe.CLASSID,user=dtframe.STDID).exists()
+                            scoresExist = Scores.objects.filter(session=activeSession.pk,term=activeTerm.pk,subject=dtframe.SUBJID,studentclass=dtframe.CLASSID,user=dtframe.STDID).exists()
                     
                             if scoresExist:
                                 
