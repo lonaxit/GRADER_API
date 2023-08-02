@@ -749,7 +749,7 @@ class UploadTerminalAttendance(generics.CreateAPIView):
     serializer_class = ResultSerializer
     parser_classes = (MultiPartParser, FormParser,)
     # permission_classes = [IsAuthenticated & IsAuthOrReadOnly]
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
         # just return the review object
