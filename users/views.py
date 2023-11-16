@@ -74,7 +74,7 @@ class RegistrationView(APIView):
                         
                         
                         if not is_staff:
-                            username,sur_name,first_name,gender,dob,other_name,phone,password
+                            # username,sur_name,first_name,gender,dob,other_name,phone,password
                             User.objects.create_student(username=username,sur_name=sur_name,first_name=first_name,gender=gender,dob=dob,other_name=other_name,phone=phone,password=password)
                             
                             return Response(
@@ -108,9 +108,9 @@ class RegistrationView(APIView):
                 {'msg':'Password mismatch'},
                 status = status.HTTP_400_BAD_REQUEST
                 )    
-        except:
+        except Exception as e:
             return Response(
-                {'msg':'Something went wrong while creating an account!'},
+                {'msg':e},
                 status =status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
