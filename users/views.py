@@ -102,7 +102,6 @@ class RegistrationView(APIView):
                     {'msg':'Password must be at least 8 characters'},
                     status = status.HTTP_400_BAD_REQUEST
                     )
-            
             else:
                 return Response(
                 {'msg':'Password mismatch'},
