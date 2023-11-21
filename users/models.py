@@ -48,7 +48,7 @@ class CustomUserManager(BaseUserManager):
         return user
     
     def create_teacher(self, username, sur_name,first_name,gender,dob,other_name=None,phone=None,password=None):
-        user = self.create_user(username,sur_name,first_name,other_name,gender,phone,dob,password)
+        user = self.create_user(username,sur_name,first_name,gender,dob,other_name,phone,password)
         user.is_staff=True
         user.save()
         
