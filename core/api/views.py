@@ -1324,7 +1324,7 @@ class ClassroomDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 class FirstAdmNumberView(APIView):
     def get(self, request, format=None):
         adm_number = AdmissionNumber.objects.all()
-        serializer = AdmissionNumberSerializer(adm_number)
+        serializer = AdmissionNumberSerializer(adm_number,many=True)
         return Response(serializer.data) 
 
 
