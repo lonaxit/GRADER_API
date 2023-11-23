@@ -1323,7 +1323,7 @@ class ClassroomDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 # endpoint to get first unassigned number  
 class FirstAdmNumberView(APIView):
     def get(self, request, format=None):
-        adm_number = AdmissionNumber.objects.filter(status='NO').first()
+        adm_number = AdmissionNumber.objects.all()
         serializer = AdmissionNumberSerializer(adm_number)
         return Response(serializer.data) 
 
