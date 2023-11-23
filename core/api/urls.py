@@ -121,29 +121,34 @@ urlpatterns =[
     
     path("rollcall-detail/<int:pk>/",ClassroomDetailAPIView.as_view(), name="roll-call"),
     
-     path("ca-roll-call/",AssessmentSheetRollCallAPIView.as_view(), name="ca-roll-call"),
+    path("ca-roll-call/",AssessmentSheetRollCallAPIView.as_view(), name="ca-roll-call"),
+    path("get-adm-number/",FirstAdmNumberView.as_view(), name="get-adm-number"),
+     
+    
+    
+    
     
     # celery migration
-    path("migrate-session/",migrateSessionsCelery.as_view(), name="migrate-session"),
-    path("migrate-class/",migrateClassCelery.as_view(), name="migrate-class"),
+    # path("migrate-session/",migrateSessionsCelery.as_view(), name="migrate-session"),
+    # path("migrate-class/",migrateClassCelery.as_view(), name="migrate-class"),
     
     
-    path("migrate-subjects/",migrateSubjectsCelery.as_view(), name="migrate-subjects"),
-    path("migrate-subjectsperclass/",migrateSubjectPerClasssCelery.as_view(), name="migrate-subjectsperclass"),
-     path("migrate-students/",migrateUserCelery.as_view(), name="migrate-students"),
-     path("migrate-subject-teachers/",migrateSubjectTeachersCelery.as_view(), name="migrate-subject-teachers"),
+    # path("migrate-subjects/",migrateSubjectsCelery.as_view(), name="migrate-subjects"),
+    # path("migrate-subjectsperclass/",migrateSubjectPerClasssCelery.as_view(), name="migrate-subjectsperclass"),
+    #  path("migrate-students/",migrateUserCelery.as_view(), name="migrate-students"),
+    #  path("migrate-subject-teachers/",migrateSubjectTeachersCelery.as_view(), name="migrate-subject-teachers"),
      
-      path("migrate-class-teachers/",migrateClassTeachersCelery.as_view(), name="migrate-class-teachers"),
+    #   path("migrate-class-teachers/",migrateClassTeachersCelery.as_view(), name="migrate-class-teachers"),
       
-      path("migrate-scores/",migrateScoresCelery.as_view(), name="migrate-scores"),
-      path("migrate-result/",migrateResultCelery.as_view(), name="migrate-result"),
-      path("migrate-enrollment/",migrateEnrollmentCelery.as_view(), name="migrate-enrollment"),
-      path("migrate-enrollment/",migrateEnrollmentCelery.as_view(), name="migrate-enrollment"),
-      path("migrate-number/",migrateAdNumberCelery.as_view(), name="migrate-number"),
-      path("migrate-studentaffective/",migrateStudentsAffectiveCelery.as_view(), name="migrate-studentaffective"),
+    #   path("migrate-scores/",migrateScoresCelery.as_view(), name="migrate-scores"),
+    #   path("migrate-result/",migrateResultCelery.as_view(), name="migrate-result"),
+    #   path("migrate-enrollment/",migrateEnrollmentCelery.as_view(), name="migrate-enrollment"),
+    #   path("migrate-enrollment/",migrateEnrollmentCelery.as_view(), name="migrate-enrollment"),
+    #   path("migrate-number/",migrateAdNumberCelery.as_view(), name="migrate-number"),
+    #   path("migrate-studentaffective/",migrateStudentsAffectiveCelery.as_view(), name="migrate-studentaffective"),
       
-      path("migrate-studentpsycho/",migrateStudentsPyschoCelery.as_view(), name="migrate-studentpsycho"),
+    #   path("migrate-studentpsycho/",migrateStudentsPyschoCelery.as_view(), name="migrate-studentpsycho"),
       
-      path("migrate-studentprofile/",migrateStudentProfileCelery.as_view(), name="migrate-studentprofile"),
+    #   path("migrate-studentprofile/",migrateStudentProfileCelery.as_view(), name="migrate-studentprofile"),
 
 ]
