@@ -300,3 +300,10 @@ class ClassroomSerializer(serializers.ModelSerializer):
     def get_student_name(self,object):
         user = User.objects.get(pk=object.student.pk)
         return user.sur_name + ' ' + user.first_name
+    
+# admission number serialiser
+class AdmissionNumber(serializers.ModelSerializer):
+
+    class Meta:
+        model = AdmissionNumber
+        fields = "__all__"
