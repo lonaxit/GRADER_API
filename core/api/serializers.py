@@ -302,7 +302,7 @@ class ClassroomSerializer(serializers.ModelSerializer):
         return user.sur_name + ' ' + user.first_name
     
 # admission number serialiser
-class AdmissionNumber(serializers.ModelSerializer):
+class AdmissionNumberSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AdmissionNumber
