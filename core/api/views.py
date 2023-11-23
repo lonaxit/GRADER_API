@@ -191,7 +191,7 @@ class AssignNumberAPIView(generics.RetrieveUpdateAPIView):
 
     def put(self, request, *args, **kwargs):
         instance = self.get_object()
-        adm_number = AdmissionNumber.objects.filter(status=='NO').first()
+        adm_number = AdmissionNumber.objects.filter(status='No').first()
         session = Session.objects.get(pk=instance.session_admitted.pk)
         if adm_number:
             numberItem = adm_number.serial_no
@@ -1323,8 +1323,8 @@ class ClassroomDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 # endpoint to get first unassigned number  
 class FirstAdmNumberView(APIView):
     def get(self, request, format=None):
-        adm_number = AdmissionNumber.objects.filter(status='No')
-        serializer = AdmissionNumberSerializer(adm_number,many=True)
+        adm_number = AdmissionNumber.objects.filter(status='No').first()
+        serializer = AdmissionNumberSerializer(adm_number,many=False)
         return Response(serializer.data) 
 
 
