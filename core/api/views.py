@@ -223,12 +223,12 @@ class StudentProfileCreate(generics.CreateAPIView):
             
             # get the instance of admission number
             adm_number = serializer.validated_data['admission_number']
-            adm_num_obj = AdmissionNumber.objects.get(pk=adm_number)
+            adm_num_obj = AdmissionNumber.objects.get(serial_no=adm_number)
             
             sess_admitted = serializer.validated_data['session_admitted']
             session = Session.objects.get(pk=sess_admitted.pk)
             
-            admissionstring = f'SKY/ADM/{session.name}/{adm_number}'
+            admissionstring = 'SKY/ADM/'+session.name+'/'+ str(serializer.validated_data['admission_number'])
             
             guardian = serializer.validated_data['guardian']
             local_govt = serializer.validated_data['local_govt']
