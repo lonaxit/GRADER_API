@@ -11,6 +11,7 @@ from core.api.serializers import *
 from core.api.permissions import *
 # from core.api.utilities import *
 from django.http import HttpResponse,JsonResponse
+from rest_framework.exceptions import NotFound
 
 import csv
 
@@ -205,35 +206,96 @@ class AssignNumberAPIView(generics.RetrieveUpdateAPIView):
             raise ValidationError({"message":"No assigned number available"})
     
 
-    
-# create student profile using user id
+# create student profile
 class StudentProfileCreate(generics.CreateAPIView):
     queryset = StudentProfile.objects.all()
     serializer_class = StudentProfileSerializer
-    # permission_classes =[IsAuthenticated & IsAuthOrReadOnly]
-    
     
     def get_queryset(self):
-        # just return the subjectteacher object
         return StudentProfile.objects.all()
+    
+    def perform_create(self, serializer):
+        try:
+            pk = self.kwargs.get('pk')
+            
+            # get user instance
+            user = User.objects.get(pk=pk)
+            
+            # get the instance of admission number
+            adm_number = serializer.validated_data['admission_number']
+            adm_num_obj = AdmissionNumber.objects.get(pk=adm_number)
+            
+            sess_admitted = serializer.validated_data['session_admitted']
+            session = Session.objects.get(pk=sess_admitted)
+            
+            admissionstring = f'SKY/ADM/{session.name}/{adm_number}'
+            
+            guardian = serializer.validated_data['guardian']
+            local_govt = serializer.validated_data['local_govt']
+            admission_number = adm_number
+            admission_numberstring = admissionstring
+            address = serializer.validated_data['address']
+            session_admitted = serializer.validated_data['session_admitted']
+            term_admitted = serializer.validated_data['term_admitted']
+            class_admitted = serializer.validated_data['class_admitted']
+            
+            serializer.save(user=user)
+            
+            adm_num_obj.status = 'Yes'
+            adm_num_obj.save()
+            
+        except User.DoesNotExist:
+            raise NotFound("User with the provided ID does not exist.")
+        except AdmissionNumber.DoesNotExist:
+            raise NotFound("AdmissionNumber with the provided ID does not exist.")
+        except Session.DoesNotExist:
+            raise NotFound("Session with the provided ID does not exist.")
+        except Exception as e:
+            # Handle other exceptions here
+            raise e  # You might want to log the exception or handle it differently
+        
+        
+# create student profile using user id
+# class StudentProfileCreate(generics.CreateAPIView):
+#     queryset = StudentProfile.objects.all()
+#     serializer_class = StudentProfileSerializer
+#     # permission_classes =[IsAuthenticated & IsAuthOrReadOnly]
+    
+    
+#     def get_queryset(self):
+#         # just return the subjectteacher object
+#         return StudentProfile.objects.all()
      
     
-    def perform_create(self,serializer):
+#     def perform_create(self,serializer):
         
-        pk = self.kwargs.get('pk')
+#         pk = self.kwargs.get('pk')
         
-        # get user instance
-        user= User.objects.get(pk=pk)
+#         # get user instance
+#         user= User.objects.get(pk=pk)
         
-        guardian = serializer.validated_data['guardian']
-        local_govt = serializer.validated_data['local_govt']
-        address = serializer.validated_data['address']
-        session_admitted = serializer.validated_data['session_admitted']
-        term_admitted = serializer.validated_data['term_admitted']
-        class_admitted = serializer.validated_data['class_admitted']
+#         # get the instance of admission number
+#         adm_numObj = AdmissionNumber.objects.get(pk=serializer.validated_data['admission_number'])
+        
+#         session = Session.objects.get(pk=serializer.validated_data['session_admitted'])
+    
+#         admissionstring ='SKY/ADM/'+session.name+'/'+ str(serializer.validated_data['admission_number'])
+        
+#         guardian = serializer.validated_data['guardian']
+#         local_govt = serializer.validated_data['local_govt']
+#         admission_number = serializer.validated_data['admission_number']
+#         admission_numberstring = admissionstring
+#         address = serializer.validated_data['address']
+#         session_admitted = serializer.validated_data['session_admitted']
+#         term_admitted = serializer.validated_data['term_admitted']
+#         class_admitted = serializer.validated_data['class_admitted']
         
         
-        serializer.save(user=user)
+#         serializer.save(user=user)
+        
+#         adm_numObj.status='Yes'
+#         adm_numObj.save()
+        
 
     
 class StudentProfileDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
