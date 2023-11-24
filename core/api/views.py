@@ -226,7 +226,7 @@ class StudentProfileCreate(generics.CreateAPIView):
             adm_num_obj = AdmissionNumber.objects.get(pk=adm_number)
             
             sess_admitted = serializer.validated_data['session_admitted']
-            session = Session.objects.get(pk=sess_admitted)
+            session = Session.objects.get(pk=sess_admitted.pk)
             
             admissionstring = f'SKY/ADM/{session.name}/{adm_number}'
             
