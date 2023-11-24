@@ -228,12 +228,12 @@ class StudentProfileCreate(generics.CreateAPIView):
             sess_admitted = serializer.validated_data['session_admitted']
             session = Session.objects.get(pk=sess_admitted.pk)
             
-            admissionstring = 'SKY/STDM/'
+            # admissionstring = 'SKY/STDM/'
             
             guardian = serializer.validated_data['guardian']
             local_govt = serializer.validated_data['local_govt']
             admission_number = adm_number
-            admission_numberstring = admissionstring
+            admission_numberstring = serializer.validated_data['admission_numberstring']
             address = serializer.validated_data['address']
             session_admitted = serializer.validated_data['session_admitted']
             term_admitted = serializer.validated_data['term_admitted']
