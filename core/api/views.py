@@ -1288,6 +1288,10 @@ class MassEnrollStudent(generics.CreateAPIView):
                 to_term = request.data.get('nextterm')
                 to_session = request.data.get('nextsession')
                 
+                print(from_class)
+                print(from_class)
+                print(from_class)
+                
                 
                 studentEnrolled = Classroom.objects.filter(Q(term=from_term) & Q(session=from_session) & Q (class_room=from_class)).distinct('student')
                 
