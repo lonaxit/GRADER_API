@@ -1298,7 +1298,7 @@ class MassEnrollStudent(generics.CreateAPIView):
                     # check if student is already enrolled
                     studentpresent = Classroom.objects.filter(Q(term=to_term) & Q(session=to_session) & Q (class_room=to_class)).distinct('student')
                     
-                    if not studentpresent:
+                    if studentpresent:
                          raise ValidationError("Double entry detected")
                     else:
                         for row in studentEnrolled:
