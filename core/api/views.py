@@ -1284,7 +1284,7 @@ class MassEnrollStudent(generics.CreateAPIView):
                 from_term = request.data.get('oldterm')
                 from_session = request.data.get('oldsession')
                 
-                to_class = request.data.get('nextclass')
+                to_class = request.data.get('nextclassroom')
                 to_term = request.data.get('nextterm')
                 to_session = request.data.get('nextsession')
                 
