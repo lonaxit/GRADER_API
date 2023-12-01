@@ -116,6 +116,7 @@ urlpatterns =[
     # Enrollment
     path("new-enrollment/",EnrollStudent.as_view(), name="new-enrollment"),
     path("mass-enrollment/",MassEnrollStudent.as_view(), name="mass-enrollment"),
+    path("new-admission-enrollment/",NewStudentsMassEnrollStudent.as_view(), name="new-admission-enrollment"),
     
     path("roll-call/",RollCallAPIView.as_view(), name="roll-call"),
     

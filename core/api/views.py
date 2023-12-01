@@ -1212,10 +1212,51 @@ class GetStudentPsychoTraits(generics.ListAPIView):
             raise ValidationError("No records matching your criteria")
         return queryset
     
+# Enroll newly admitted students in their class
+class NewStudentsMassEnrollStudent(generics.CreateAPIView):
+    serializer_class = ClassroomSerializer
+    # permission_classes = [IsAuthenticated & IsAuthOrReadOnly]
     
+    def get_queryset(self):
+        # just return the review object
+        return Classroom.objects.all()
+    
+    def post(self, request, *args, **kwargs):
+        
+        
+        with transaction.atomic():
+            
+            try:
+                new_class = request.data.get('newclass')
+                new_term = request.data.get('newterm')
+                new_session = request.data.get('newsession')
+                
+                newlyadmittedstudents = StudentProfile.objects.filter(Q(term_admitted=new_term) & Q(session_admitted=new_session) & Q (class_admitted=new_class)).distinct('user')
+                
+                if not newlyadmittedstudents:
+                    raise ValidationError("No records available for your selection")
+                
+                else:
+                    for row in newlyadmittedstudents:
+                            
+                            enrollObj = Classroom.objects.create(
+                            class_room=SchoolClass.objects.get(pk=new_class),
+                            session = Session.objects.get(pk=new_session),
+                            term = Term.objects.get(pk=new_term),
+                            student = User.objects.get(pk=row.user.pk)
+                        )
+                    enrollObj.save()
+  
+            except Exception as e:
+                raise ValidationError(e)
+           
+        return Response(
+                {'msg':'Enrollment created successfully'},
+                status = status.HTTP_201_CREATED
+                )  
 
 
-# Enroll student in class room
+# Enroll individual student in class room
 class EnrollStudent(generics.CreateAPIView):
     serializer_class = ClassroomSerializer
     # permission_classes = [IsAuthenticated & IsAuthOrReadOnly]
