@@ -1238,12 +1238,15 @@ class NewStudentsMassEnrollStudent(generics.CreateAPIView):
                 
                 else:
                     for row in newlyadmittedstudents:
+                        std_obj = Classroom.objects.filter(student=row.user.pk,class_room=new_class,session=new_session,term=new_term)
+                        if std_obj:
+                            continue
                             
-                            enrollObj = Classroom.objects.create(
-                            class_room=SchoolClass.objects.get(pk=new_class),
-                            session = Session.objects.get(pk=new_session),
-                            term = Term.objects.get(pk=new_term),
-                            student = User.objects.get(pk=row.user.pk)
+                        enrollObj = Classroom.objects.create(
+                        class_room=SchoolClass.objects.get(pk=new_class),
+                        ession = Session.objects.get(pk=new_session),
+                        erm = Term.objects.get(pk=new_term),
+                        student = User.objects.get(pk=row.user.pk)
                         )
                     enrollObj.save()
   
@@ -1338,15 +1341,14 @@ class MassEnrollStudent(generics.CreateAPIView):
                     raise ValidationError("No records available for your selection")
                 
                 else:
-                    # check if student is already enrolled
-                    studentpresent = Classroom.objects.filter(Q(term=to_term) & Q(session=to_session) & Q (class_room=to_class)).distinct('student')
-                    
-                    if studentpresent:
-                         raise ValidationError("Double entry detected")
-                    else:
-                        for row in studentEnrolled:
+                
+                    for row in studentEnrolled:
+                        # check for students duplicate
+                        stud_obj = Classroom.objects.filter(student=row.student.pk,class_room=to_class,session=to_session,term=to_term)
+                        if stud_obj:
+                            continue
                             
-                            enrollObj = Classroom.objects.create(
+                        enrollObj = Classroom.objects.create(
                             class_room=SchoolClass.objects.get(pk=to_class),
                             session = Session.objects.get(pk=to_session),
                             term = Term.objects.get(pk=to_term),
