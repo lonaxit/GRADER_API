@@ -35,7 +35,7 @@ def processTerminalResult(request,classObj,termObj,sessionObj):
     # find class teacher
     # class_teacher = ClassTeacher.objects.get(session=sessionObj.pk,term=termObj.pk,classroom=classObj)
     
-    _isteacher = ClassTeacher.objects.get(tutor=request.user,classroom=classObj)
+    _isteacher = ClassTeacher.objects.get(tutor=request.user,classroom=classObj,session=sessionObj)
     
     # find distint students in the scores table
     students = Scores.objects.filter(session=sessionObj,term=termObj,studentclass=classObj).distinct('user')
