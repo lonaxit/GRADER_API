@@ -368,12 +368,13 @@ class SubjectTeacherCreateAPIView(generics.CreateAPIView):
         
         subject = serializer.validated_data['subject']
         classroom = serializer.validated_data['classroom']
+        sessionId = serializer.validated_data['session']
         
         # subject = Subject.objects.get(pk=subject_id)
         # classroom = SchoolClass.objects.get(pk = classroom_id)
         
         # logic to prevent multple creation of subjectteacher by a user
-        _queryset = SubjectTeacher.objects.filter(teacher=user,subject=subject,classroom=classroom)
+        _queryset = SubjectTeacher.objects.filter(teacher=user,subject=subject,classroom=classroom,session=sessionId)
         
         if _queryset.exists():
             
@@ -1343,7 +1344,7 @@ class MassEnrollStudent(generics.CreateAPIView):
                 else:
                 
                     for row in studentEnrolled:
-                        # check for students duplicate
+                        # check for students duplicate in class
                         stud_obj = Classroom.objects.filter(student=row.student.pk,class_room=to_class,session=to_session,term=to_term)
                         if stud_obj:
                             continue
