@@ -130,7 +130,7 @@ WSGI_APPLICATION = 'gradebook.wsgi.application'
 
 # production
 DATABASES={
-    'default': dj_database_url.parse(env('DB_URL'))
+    'default': dj_database_url.parse(env('DATABASE_URL'))
 }
 
 
