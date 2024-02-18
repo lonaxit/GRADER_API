@@ -67,6 +67,9 @@ urlpatterns =[
     #  create new sccores using user id
     path("new-score/<int:pk>/", ScoresCreateAPIView.as_view(), name="new-score"),
     path("filter-scores/", FindScoresAPIView.as_view(), name="filter-scores"),
+    # NEW API ENDPOINT
+    path("filter-terminal-scores/", FilterTerminalScoresAPIView.as_view(), name="filter-terminal-scores"),
+    
     path("scores-detail/<int:pk>/", ScoresDetailAPIView.as_view(), name="scores-detail"),
     
     # user scores given userid, term, session, class
