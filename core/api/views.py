@@ -584,6 +584,25 @@ class FindScoresAPIView(APIView):
         # Serialize the data and return the response
         serializer = ScoresSerializer(queryset, many=True)
         return Response(serializer.data)
+    
+# get scores based on term, session and class
+class FilterTerminalScoresAPIView(APIView):
+    def get(self, request):
+        payload = request.query_params
+        
+        # subjObj = Subject.objects.get(pk=payload.get('subject'))
+        classObj = SchoolClass.objects.get(pk=payload.get('studentclass'))
+        termObj = Term.objects.get(pk=payload.get('term'))
+        sessionObj = Session.objects.get(pk=payload.get('session'))
+
+        # Example usage: filtering queryset based on payload parameters
+        queryset = Scores.objects.filter(studentclass=classObj,session=sessionObj,term=termObj)
+        if not queryset:
+            raise ValidationError("No records matching your criteria")
+        
+        # Serialize the data and return the response
+        serializer = ScoresSerializer(queryset, many=True)
+        return Response(serializer.data)
         
 
 # score detail
