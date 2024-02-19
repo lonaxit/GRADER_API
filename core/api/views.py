@@ -989,7 +989,9 @@ class GetResult(generics.ListAPIView):
         # _term = self.request.data.get('term')
         payload = self.request.query_params
         
-        classObj = SchoolClass.objects.get(pk=payload.get('classroom'))
+        myclass = payload.get('studentclass')
+        
+        classObj = SchoolClass.objects.get(pk=myclass)
         termObj = Term.objects.get(pk=payload.get('term'))
         sessionObj = Session.objects.get(pk=payload.get('session'))
         
