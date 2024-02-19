@@ -178,6 +178,7 @@ class ScoresSerializer(serializers.ModelSerializer):
     class_name = serializers.SerializerMethodField()
     term_name = serializers.SerializerMethodField()
     subject_name = serializers.SerializerMethodField()
+    subject_code = serializers.SerializerMethodField()
 
     class Meta:
         model = Scores
@@ -208,6 +209,10 @@ class ScoresSerializer(serializers.ModelSerializer):
         _subj = Subject.objects.get(pk=object.subject.pk)
         return _subj.name
     
+    def get_subject_code(self,object):
+               
+        _subj = Subject.objects.get(pk=object.subject.pk)
+        return _subj.subject_code
 
 class ResultSerializer(serializers.ModelSerializer):
     student_name = serializers.SerializerMethodField()
