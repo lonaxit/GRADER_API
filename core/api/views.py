@@ -593,7 +593,7 @@ class FilterTerminalScoresAPIView(APIView):
         print(payload)
         myterm = payload.get('term')
         mysession = payload.get('session')
-        myclass= payload.get('studentclass')
+        myclass= payload.get('classroom')
         
         # subjObj = Subject.objects.get(pk=payload.get('subject'))
         classObj = SchoolClass.objects.get(pk=myclass)
@@ -991,7 +991,7 @@ class GetResult(generics.ListAPIView):
         # _term = self.request.data.get('term')
         payload = self.request.query_params
         
-        myclass = payload.get('studentclass')
+        myclass = payload.get('classroom')
         
         classObj = SchoolClass.objects.get(pk=myclass)
         termObj = Term.objects.get(pk=payload.get('term'))
