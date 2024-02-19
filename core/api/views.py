@@ -589,12 +589,14 @@ class FindScoresAPIView(APIView):
 class FilterTerminalScoresAPIView(APIView):
     def get(self, request):
         payload = request.query_params
-        print(payload)
+        myterm = payload.term
+        mysession = payload.session
+        myclass= payload.studentclass
         
         # subjObj = Subject.objects.get(pk=payload.get('subject'))
-        classObj = SchoolClass.objects.get(pk=payload.get('classroom'))
-        termObj = Term.objects.get(pk=payload.get('term'))
-        sessionObj = Session.objects.get(pk=payload.get('session'))
+        classObj = SchoolClass.objects.get(pk=myclass)
+        termObj = Term.objects.get(pk=myterm)
+        sessionObj = Session.objects.get(pk=mysession)
         
 
         # Example usage: filtering queryset based on payload parameters
