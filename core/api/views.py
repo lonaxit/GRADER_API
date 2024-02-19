@@ -588,7 +588,9 @@ class FindScoresAPIView(APIView):
 # get scores based on term, session and class
 class FilterTerminalScoresAPIView(APIView):
     def get(self, request):
+        
         payload = request.query_params
+        print(payload)
         myterm = payload.get('term')
         mysession = payload.get('session')
         myclass= payload.get('studentclass')
