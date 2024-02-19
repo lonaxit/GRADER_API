@@ -589,6 +589,7 @@ class FindScoresAPIView(APIView):
 class FilterTerminalScoresAPIView(APIView):
     def get(self, request):
         payload = request.query_params
+        print(payload)
         
         # subjObj = Subject.objects.get(pk=payload.get('subject'))
         classObj = SchoolClass.objects.get(pk=payload.get('classroom'))
